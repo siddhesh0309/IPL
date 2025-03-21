@@ -1,0 +1,28 @@
+import { type NextRequest, NextResponse } from "next/server"
+import { getOverallStatistics } from "@/lib/db"
+import { authMiddleware } from "@/lib/auth"
+
+export async function GET(request: NextRequest) {
+  try {
+    const authResult = await authMiddleware(request)
+    if (!authResult.success) {
+      return NextResponse.json({ success: false, error: authResult.error }, { status: 401 })
+    }
+
+    // Only admins can access overall statistics
+    if (authResult.user.role !== "admin") {
+      return NextResponse.json({ success: false, error: "Unauthorized. Admin access required." }, { status: 403 })
+    }
+
+    const { searchParams } = new URL(request.url)
+    const period = searchParams.get("period") || "all"
+
+    const stats = await getOverallStatistics(period)
+
+    return NextResponse.json(stats)
+  } catch (error) {
+    console.error("Error fetching statistics:", error)
+    return NextResponse.json({ success: false, error: "Failed to fetch statistics" }, { status: 500 })
+  }
+}
+

@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  username      String?        @unique
+  password      String
+  bio           String?
+  image         String?
+  role          Role           @default(USER)
+  points        Int            @default(0)
+  rank          Int            @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  votes         Vote[]
+  notifications Notification[]
+  comments      Comment[]
+  settings      Settings?
+}
+
+model Settings {
+  id                   String  @id @default(cuid())
+  userId               String  @unique
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailNotifications   Boolean @default(true)
+  pushNotifications    Boolean @default(true)
+  darkMode             Boolean @default(false)
+  language             String  @default("en")
+  showLeaderboardRank  Boolean @default(true)
+  showPredictionPoints Boolean @default(true)
+}
+
+model Team {
+  id           String   @id @default(cuid())
+  name         String   @unique
+  shortName    String   @unique
+  logo         String
+  primaryColor String
+  homeMatches  Match[]  @relation("HomeTeam")
+  awayMatches  Match[]  @relation("AwayTeam")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Match {
+  id            String      @id @default(cuid())
+  homeTeamId    String
+  homeTeam      Team        @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeamId    String
+  awayTeam      Team        @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  date          DateTime
+  venue         String
+  homeTeamScore Int?
+  awayTeamScore Int?
+  status        MatchStatus @default(UPCOMING)
+  polls         Poll[]
+  result        String?
+  comments      Comment[]
+  notifications Notification[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Poll {
+  id            String         @id @default(cuid())
+  matchId       String
+  match         Match          @relation(fields: [matchId], references: [id])
+  type          String         // WINNER, MOTM, SCORE, WICKETS, CUSTOM
+   homeTeamId    String
+  awayTeamId    String
+  date          DateTime
+  venue         String
+  pollEndTime   DateTime
+  status        PollStatus     @default(ACTIVE)
+  pollType      PollType
+  question      String
+  options       Option[]
+  startTime     DateTime       @default(now())
+  votes         Vote[]
+  endTime       DateTime
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  notifications Notification[]
+  result        String?
+}
+
+model Option {
+  id        String   @id @default(cuid())
+  pollId    String
+  poll      Poll     @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  text      String
+  votes     Vote[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isCorrect Boolean  @default(false)
+}
+
+model Vote {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pollId    String
+  poll      Poll     @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  optionId  String
+  option    Option   @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  points    Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, pollId])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType // POLL_CREATED, POLL_CLOSED, POLL_SETTLED, MATCH_COMPLETED, POINTS_EARNED
+  message   String
+  read      Boolean          @default(false)
+  pollId    String?
+  poll      Poll?            @relation(fields: [pollId], references: [id])
+  matchId   String?
+  createdAt DateTime         @default(now())
+  Match Match[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  matchId   String
+  match     Match    @relation(fields: [matchId], references: [id])
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum MatchStatus {
+  UPCOMING
+  LIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum PollStatus {
+  ACTIVE
+  CLOSED
+  SETTLED
+}
+
+enum PollType {
+  WINNER
+  MOTM
+  SCORE
+  WICKETS
+  CUSTOM
+}
+
+enum NotificationType {
+  POLL_CREATED
+  POLL_CLOSED
+  POLL_SETTLED
+  MATCH_REMINDER
+  POINTS_AWARDED
+  SYSTEM
+}

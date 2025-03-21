@@ -1,0 +1,294 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+
+    /* IPL Team Colors */
+    --mi: 199 100% 32%;
+    --csk: 47 100% 50%;
+    --rcb: 0 100% 40%;
+    --kkr: 270 100% 40%;
+    --dc: 199 100% 45%;
+    --srh: 35 100% 50%;
+    --rr: 340 100% 60%;
+    --pbks: 0 100% 40%;
+    --gt: 120 100% 25%;
+    --lsg: 200 100% 40%;
+
+    /* Sidebar variables */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+
+    /* Sidebar variables for dark mode */
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 240 5.9% 10%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .team-card {
+    @apply relative overflow-hidden transition-all duration-300 hover:shadow-lg;
+  }
+
+  .team-card::before {
+    content: "";
+    @apply absolute inset-0 opacity-10 transition-opacity duration-300;
+  }
+
+  .team-card:hover::before {
+    @apply opacity-20;
+  }
+
+  .team-mi::before {
+    background-color: hsl(var(--mi));
+  }
+
+  .team-csk::before {
+    background-color: hsl(var(--csk));
+  }
+
+  .team-rcb::before {
+    background-color: hsl(var(--rcb));
+  }
+
+  .team-kkr::before {
+    background-color: hsl(var(--kkr));
+  }
+
+  .team-dc::before {
+    background-color: hsl(var(--dc));
+  }
+
+  .team-srh::before {
+    background-color: hsl(var(--srh));
+  }
+
+  .team-rr::before {
+    background-color: hsl(var(--rr));
+  }
+
+  .team-pbks::before {
+    background-color: hsl(var(--pbks));
+  }
+
+  .team-gt::before {
+    background-color: hsl(var(--gt));
+  }
+
+  .team-lsg::before {
+    background-color: hsl(var(--lsg));
+  }
+
+  .match-card {
+    @apply relative overflow-hidden transition-all duration-300 hover:shadow-lg;
+  }
+
+  .match-card-gradient {
+    @apply absolute inset-0 bg-gradient-to-r opacity-10 transition-opacity duration-300;
+  }
+
+  .match-card:hover .match-card-gradient {
+    @apply opacity-20;
+  }
+
+  .stats-card {
+    @apply relative overflow-hidden transition-all duration-300 hover:shadow-lg;
+  }
+
+  .stats-card::after {
+    content: "";
+    @apply absolute bottom-0 left-0 right-0 h-1 bg-primary transition-all duration-300 opacity-70;
+  }
+
+  .stats-card:hover::after {
+    @apply h-1.5 opacity-100;
+  }
+
+  /* Animations */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-in-out;
+  }
+
+  .animate-pulse-slow {
+    animation: pulseSlow 3s infinite;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes pulseSlow {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+}
+
+/* Add these responsive utility classes */
+@layer utilities {
+  .responsive-container {
+    @apply w-full px-4 sm:px-6 md:px-8 max-w-[1400px] mx-auto;
+  }
+
+  .responsive-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
+  }
+
+  .responsive-padding {
+    @apply p-3 sm:p-4 md:p-6;
+  }
+
+  /* Responsive typography */
+  .h1-responsive {
+    @apply text-2xl sm:text-3xl md:text-4xl font-bold;
+  }
+
+  .h2-responsive {
+    @apply text-xl sm:text-2xl md:text-3xl font-bold;
+  }
+
+  /* Fix for mobile overflow issues */
+  .overflow-fix {
+    @apply max-w-full overflow-x-hidden;
+  }
+
+  /* Animations */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Match card styling */
+  .match-card {
+    @apply relative border-2 transition-all duration-200 hover:shadow-md;
+  }
+
+  .match-card:hover {
+    @apply border-primary/50 -translate-y-1;
+  }
+
+  .match-card-gradient {
+    @apply absolute top-0 left-0 h-2 w-full bg-gradient-to-r;
+  }
+}
+
+/* Fix for mobile sidebar */
+@media (max-width: 768px) {
+  .sidebar-mobile-fix {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
