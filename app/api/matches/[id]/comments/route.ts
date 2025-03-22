@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getMatchComments, createComment } from "@/lib/db"
-import { authMiddleware } from "@/lib/auth"
+import { authenticate, authError } from "@/lib/auth"
+
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -19,9 +20,10 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const authResult = await authMiddleware(request)
-    if (!authResult.success) {
-      return NextResponse.json({ success: false, error: authResult.error }, { status: 401 })
+    const { user, error } = await authenticate(request)
+
+    if (error || !user) {
+      return authError()
     }
 
     const data = await request.json()
@@ -33,7 +35,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
     const comment = await createComment({
       matchId: params.id,
-      userId: authResult.user.id,
+      userId: user.id,
       text,
     })
 

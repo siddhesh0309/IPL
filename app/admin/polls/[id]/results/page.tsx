@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useToast } from "@/components/ui/use-toast"
 
-export default function PollResultsPage({ params }: { params: { id: string } }) {
+export default function PollResultsPage({ params }) {
   const router = useRouter()
   const { toast } = useToast()
   const { fetchPoll, isLoading } = usePolls()
@@ -32,6 +32,8 @@ export default function PollResultsPage({ params }: { params: { id: string } }) 
     { name: "Hardik Pandya", team: "Mumbai Indians", votes: 125, percentage: 10 },
     { name: "Ruturaj Gaikwad", team: "Chennai Super Kings", votes: 125, percentage: 10 },
   ])
+
+  params = use(params)
 
   useEffect(() => {
     const loadPoll = async () => {

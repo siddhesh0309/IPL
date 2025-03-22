@@ -40,7 +40,8 @@ export default function Dashboard() {
         const matchesResponse = await fetch("/api/matches?status=UPCOMING")
         if (!matchesResponse.ok) throw new Error("Failed to fetch matches")
         const matchesData = await matchesResponse.json()
-        setUpcomingMatches(matchesData.data.slice(0, 3))
+        console.log(matchesData);
+        setUpcomingMatches(matchesData.matches.slice(0, 3))
 
         // Fetch user's prediction history if logged in
         if (user) {

@@ -29,12 +29,14 @@ export default function PollsPage() {
         const response = await fetch("/api/polls")
         if (!response.ok) throw new Error("Failed to fetch polls")
         const data = await response.json()
+        console.log(data)
+        console.log(data.data.map((poll: any) => poll.status))
         const polls = data.data
 
         // Filter polls by status
         setActivePolls(polls.filter((poll) => poll.status === "ACTIVE"))
         setUpcomingPolls(polls.filter((poll) => poll.status === "UPCOMING"))
-        setCompletedPolls(polls.filter((poll) => poll.status === "COMPLETED"))
+        setCompletedPolls(polls.filter((poll) => poll.status === "SETTLED"))
 
         // If user is logged in, fetch their votes
         if (user) {
@@ -121,8 +123,8 @@ export default function PollsPage() {
                 <PollCard
                   key={poll.id}
                   id={poll.id}
-                  team1={poll.team1}
-                  team2={poll.team2}
+                  team1={poll.match.homeTeam.name}
+                  team2={poll.match.awayTeam.name}
                   date={new Date(poll.date).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
@@ -161,8 +163,8 @@ export default function PollsPage() {
                 <PollCard
                   key={poll.id}
                   id={poll.id}
-                  team1={poll.team1}
-                  team2={poll.team2}
+                  team1={poll.match.homeTeam.name}
+                  team2={poll.match.awayTeam.name}
                   date={new Date(poll.date).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
@@ -201,14 +203,14 @@ export default function PollsPage() {
                 <PollCard
                   key={poll.id}
                   id={poll.id}
-                  team1={poll.team1}
-                  team2={poll.team2}
+                  team1={poll.match.homeTeam.name}
+                  team2={poll.match.awayTeam.name}
                   date={new Date(poll.date).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
                     year: "numeric",
                   })}
-                  result={`${poll.team1} won by 24 runs`}
+                  result={`${poll.match.homeTeam.name} won by 24 runs`}
                   yourVote={userVotes[poll.id] ? getOptionText(poll, userVotes[poll.id]) : undefined}
                   isCorrect={userVotes[poll.id] ? getOptionText(poll, userVotes[poll.id]) === poll.team1 : undefined}
                 />
@@ -252,7 +254,7 @@ function PollCard({
   hasVoted?: boolean
   status?: string
 }) {
-  const pollId = `${team1.toLowerCase().replace(/\s+/g, "-")}-vs-${team2.toLowerCase().replace(/\s+/g, "-")}`
+  // const pollId = `${team1.toLowerCase().replace(/\s+/g, "-")}-vs-${team2.toLowerCase().replace(/\s+/g, "-")}`
 
   return (
     <Card>

@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -31,7 +31,7 @@ function TimePicker({ value, onChange }: { value?: string; onChange: (time: stri
   return <Input type="time" value={value || ""} onChange={(e) => onChange(e.target.value)} />
 }
 
-export default function EditPollPage({ params }: { params: { id: string } }) {
+export default function EditPollPage({ params }) {
   const router = useRouter()
   const { toast } = useToast()
   const { fetchPoll, updatePoll, isLoading, error } = usePolls()
@@ -48,6 +48,8 @@ export default function EditPollPage({ params }: { params: { id: string } }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [loadingError, setLoadingError] = useState<string | null>(null)
 
+  params = use(params)
+
   useEffect(() => {
     const loadPoll = async () => {
       try {
@@ -62,7 +64,7 @@ export default function EditPollPage({ params }: { params: { id: string } }) {
         setVenue(pollData.venue)
         setPollEndDate(new Date(pollData.pollEndTime))
         setPollEndTime(new Date(pollData.pollEndTime).toTimeString().slice(0, 5))
-        setOptions(pollData.options)
+        setOptions(pollData.osptions)
       } catch (error) {
         console.error("Error loading poll:", error)
         setLoadingError("Failed to load poll details. Please try again.")

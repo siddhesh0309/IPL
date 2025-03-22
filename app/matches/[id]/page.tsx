@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -50,7 +50,7 @@ type MatchDetails = {
   }>
 }
 
-export default function MatchDetailsPage({ params }: { params: { id: string } }) {
+export default function MatchDetailsPage({ params }) {
   const router = useRouter()
   const { user } = useAuth()
   const { toast } = useToast()
@@ -59,6 +59,8 @@ export default function MatchDetailsPage({ params }: { params: { id: string } })
   const [error, setError] = useState<string | null>(null)
   const [commentText, setCommentText] = useState("")
   const [isSubmittingComment, setIsSubmittingComment] = useState(false)
+
+  params = use(params)
 
   useEffect(() => {
     const fetchMatchDetails = async () => {
@@ -71,6 +73,7 @@ export default function MatchDetailsPage({ params }: { params: { id: string } })
         if (!response.ok) throw new Error("Failed to fetch match details")
 
         const matchData = await response.json()
+        console.log(matchData)
         setMatch(matchData)
 
         // Fetch comments if available
@@ -78,6 +81,7 @@ export default function MatchDetailsPage({ params }: { params: { id: string } })
           const commentsResponse = await fetch(`/api/matches/${matchData.id}/comments`)
           if (commentsResponse.ok) {
             const commentsData = await commentsResponse.json()
+            console.log(commentsData)
             setMatch((prev) => (prev ? { ...prev, comments: commentsData } : null))
           }
         }
@@ -231,7 +235,7 @@ export default function MatchDetailsPage({ params }: { params: { id: string } })
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                   <CardTitle className="text-xl">
-                    {match.team1} vs {match.team2}
+                    {match.homeTeam.name} vs {match.awayTeam.name}
                   </CardTitle>
                   <CardDescription className="flex flex-col sm:flex-row sm:items-center gap-2 mt-1">
                     <div className="flex items-center">
@@ -371,7 +375,7 @@ export default function MatchDetailsPage({ params }: { params: { id: string } })
                         <div key={comment.id} className="flex gap-4 p-4 border rounded-lg">
                           <Avatar className="h-10 w-10">
                             <AvatarFallback>
-                              {comment.userName
+                              {comment.user.name
                                 .split(" ")
                                 .map((n) => n[0])
                                 .join("")}
@@ -424,7 +428,7 @@ export default function MatchDetailsPage({ params }: { params: { id: string } })
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <Card>
                             <CardHeader>
-                              <CardTitle className="text-lg">{match.team1}</CardTitle>
+                              <CardTitle className="text-lg">{match.homeTeam.name}</CardTitle>
                             </CardHeader>
                             <CardContent>
                               <p className="text-xl font-bold">{match.stats.team1Score || "N/A"}</p>
@@ -432,7 +436,7 @@ export default function MatchDetailsPage({ params }: { params: { id: string } })
                           </Card>
                           <Card>
                             <CardHeader>
-                              <CardTitle className="text-lg">{match.team2}</CardTitle>
+                              <CardTitle className="text-lg">{match.awayTeam.name}</CardTitle>
                             </CardHeader>
                             <CardContent>
                               <p className="text-xl font-bold">{match.stats.team2Score || "N/A"}</p>

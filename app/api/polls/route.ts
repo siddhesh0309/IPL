@@ -1,13 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getPollsByStatus, createPoll } from "@/lib/db"
-import { authMiddleware } from "@/lib/auth"
+import { authenticate, authError } from "@/lib/auth"
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get("status") || "all"
     const teamId = searchParams.get("teamId")
-    const limit = Number.parseInt(searchParams.get("limit") || "50")
+    const limit = Number.parseInt(searchParams.get("limit") || "100")
     const offset = Number.parseInt(searchParams.get("offset") || "0")
 
     const polls = await getPollsByStatus(status, teamId, limit, offset)
@@ -24,12 +24,15 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const authResult = await authMiddleware(request)
-    if (!authResult.success) {
-      return NextResponse.json({ success: false, error: authResult.error }, { status: 401 })
+    const { user, error } = await authenticate(request)
+
+
+    if (error || !user) {
+      return authError()
     }
 
-    if (authResult.user?.role !== "admin") {
+
+    if (user?.role !== "ADMIN") {
       return NextResponse.json({ success: false, error: "Unauthorized. Admin access required." }, { status: 403 })
     }
 
@@ -47,7 +50,7 @@ export async function POST(request: NextRequest) {
       options,
       startTime: startTime ? new Date(startTime) : new Date(),
       endTime: endTime ? new Date(endTime) : undefined,
-      createdBy: authResult.user.id,
+      createdBy: user.id,
     })
 
     return NextResponse.json(

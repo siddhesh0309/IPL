@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -56,11 +56,13 @@ type TeamDetails = {
   upcomingMatches: TeamMatch[]
 }
 
-export default function TeamDetailsPage({ params }: { params: { id: string } }) {
+export default function TeamDetailsPage({ params }) {
   const router = useRouter()
   const [team, setTeam] = useState<TeamDetails | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  params == use(params)
 
   useEffect(() => {
     const fetchTeamDetails = async () => {

@@ -4,19 +4,19 @@ import { PrismaClient } from "@prisma/client"
 // exhausting your database connection limit.
 // Learn more: https://pris.ly/d/help/next-js-best-practices
 
-// const globalForPrisma = global as unknown as { prisma: PrismaClient }
+const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
-// export const db =
-//   globalForPrisma.prisma ||
-//   new PrismaClient({
-//     log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
-//   })
+export const db =
+  globalForPrisma.prisma ||
+  new PrismaClient({
+    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+  })
 
-// if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = db
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = db
 
 // Helper functions for common database operations
 
-const prisma = new PrismaClient()
+const prisma = db;
 
 // User functions
 export async function getUserById(id: string) {
@@ -301,7 +301,7 @@ export async function deleteMatch(id: string) {
 }
 
 // Poll functions
-export async function getPollsByStatus(status = "all", teamId?: string | null, limit = 50, offset = 0) {
+export async function getPollsByStatus(status = "all", teamId?: string | null, limit = 100, offset = 0) {
   const where: any = {}
 
   if (status !== "all") {

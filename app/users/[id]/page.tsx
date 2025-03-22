@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -37,13 +37,15 @@ type UserProfile = {
   }>
 }
 
-export default function UserProfilePage({ params }: { params: { id: string } }) {
+export default function UserProfilePage({ params }) {
   const router = useRouter()
   const { user } = useAuth()
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isCurrentUser, setIsCurrentUser] = useState(false)
+
+  params == use(params)
 
   useEffect(() => {
     const fetchUserProfile = async () => {

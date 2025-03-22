@@ -1,16 +1,21 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getOverallStatistics } from "@/lib/db"
-import { authMiddleware } from "@/lib/auth"
+import { authenticate, authError } from "@/lib/auth"
 
 export async function GET(request: NextRequest) {
+
+
   try {
-    const authResult = await authMiddleware(request)
-    if (!authResult.success) {
-      return NextResponse.json({ success: false, error: authResult.error }, { status: 401 })
+
+    console.log('request', request)
+    const { user, error } = await authenticate(request)
+
+    if (error || !user) {
+      return authError()
     }
 
     // Only admins can access overall statistics
-    if (authResult.user.role !== "admin") {
+    if (user.role !== "ADMIN") {
       return NextResponse.json({ success: false, error: "Unauthorized. Admin access required." }, { status: 403 })
     }
 

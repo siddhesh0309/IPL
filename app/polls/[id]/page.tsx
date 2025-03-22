@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -18,7 +18,7 @@ import type { Poll } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
-export default function PollPage({ params }: { params: { id: string } }) {
+export default function PollPage({ params }) {
   const router = useRouter()
   const { toast } = useToast()
   const { user } = useAuth()
@@ -30,12 +30,13 @@ export default function PollPage({ params }: { params: { id: string } }) {
   const [hasVoted, setHasVoted] = useState(false)
   const [userVote, setUserVote] = useState<{ team: string | null; player: string | null }>({ team: null, player: null })
 
+  params = use(params)
+
   useEffect(() => {
     const loadPoll = async () => {
       try {
-        const pollData = await fetchPoll(params.id)
-        console.log("Poll data:", pollData)
-        setPoll(pollData)
+        const { data } = await fetchPoll(params.id)
+        setPoll(data)
 
         // Check if user has already voted
         if (user) {
@@ -46,14 +47,14 @@ export default function PollPage({ params }: { params: { id: string } }) {
               setHasVoted(true)
 
               // Find the option text for the user's vote
-              const teamOption = pollData.options.find((opt) => opt.id === votes[0].optionId)
+              const teamOption = data.options.find((opt) => opt.id === votes[0].optionId)
               if (teamOption) {
                 setUserVote((prev) => ({ ...prev, team: teamOption.text }))
               }
 
               // If there's a second vote (for MOTM), get that too
               if (votes.length > 1) {
-                const playerOption = pollData.options.find((opt) => opt.id === votes[1].optionId)
+                const playerOption = data.options.find((opt) => opt.id === votes[1].optionId)
                 if (playerOption) {
                   setUserVote((prev) => ({ ...prev, player: playerOption.text }))
                 }
@@ -161,18 +162,18 @@ export default function PollPage({ params }: { params: { id: string } }) {
 
   // Mock data for Man of the Match options
   const players = [
-    { id: "p1", name: "Rohit Sharma", team: poll.team1 },
-    { id: "p2", name: "Jasprit Bumrah", team: poll.team1 },
-    { id: "p3", name: "Hardik Pandya", team: poll.team1 },
-    { id: "p4", name: "MS Dhoni", team: poll.team2 },
-    { id: "p5", name: "Ravindra Jadeja", team: poll.team2 },
-    { id: "p6", name: "Ruturaj Gaikwad", team: poll.team2 },
+    { id: "p1", name: "Rohit Sharma", team: poll.match.homeTeam.name },
+    { id: "p2", name: "Jasprit Bumrah", team: poll.match.homeTeam.name },
+    { id: "p3", name: "Hardik Pandya", team: poll.match.homeTeam.name },
+    { id: "p4", name: "MS Dhoni", team: poll.match.awayTeam.name },
+    { id: "p5", name: "Ravindra Jadeja", team: poll.match.awayTeam.name },
+    { id: "p6", name: "Ruturaj Gaikwad", team: poll.match.awayTeam.name },
   ]
 
   // Mock data for team votes
   const teamVotes = {
-    [poll.team1]: 65,
-    [poll.team2]: 35,
+    [poll.match.homeTeam.name]: 65,
+    [poll.match.awayTeam.name]: 35,
   }
 
   // Mock data for player votes
@@ -186,6 +187,9 @@ export default function PollPage({ params }: { params: { id: string } }) {
   }
 
   const isPollEnded = new Date(poll.pollEndTime) < new Date()
+
+  console.log(isPollEnded)
+  console.log(poll)
 
   return (
     <div className="container mx-auto py-6 space-y-6">
@@ -207,7 +211,7 @@ export default function PollPage({ params }: { params: { id: string } }) {
           <div className="flex justify-between items-start">
             <div>
               <CardTitle className="text-xl">
-                {poll.team1} vs {poll.team2}
+                {poll.match.homeTeam.name} vs {poll.match.awayTeam.name}
               </CardTitle>
               <CardDescription>
                 {new Date(poll.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} •
@@ -218,7 +222,7 @@ export default function PollPage({ params }: { params: { id: string } }) {
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">
-                {isPollEnded ? "Poll ended" : `Poll ends in ${getTimeRemaining(poll.pollEndTime)}`}
+                {isPollEnded ? "Poll ended" : `Poll ends in ${getTimeRemaining(poll.pollEndTime.toLocaleString())}`}
               </span>
             </div>
           </div>
@@ -237,17 +241,17 @@ export default function PollPage({ params }: { params: { id: string } }) {
                   <div className="space-y-3">
                     <div className="space-y-1">
                       <div className="flex justify-between text-sm">
-                        <span>{poll.team1}</span>
-                        <span>{teamVotes[poll.team1]}%</span>
+                        <span>{poll.match.homeTeam.name}</span>
+                        <span>{teamVotes[poll.match.homeTeam.name]}%</span>
                       </div>
-                      <Progress value={teamVotes[poll.team1]} className="h-2" />
+                      <Progress value={teamVotes[poll.match.homeTeam.name]} className="h-2" />
                     </div>
                     <div className="space-y-1">
                       <div className="flex justify-between text-sm">
-                        <span>{poll.team2}</span>
-                        <span>{teamVotes[poll.team2]}%</span>
+                        <span>{poll.match.awayTeam.name}</span>
+                        <span>{teamVotes[poll.match.awayTeam.name]}%</span>
                       </div>
-                      <Progress value={teamVotes[poll.team2]} className="h-2" />
+                      <Progress value={teamVotes[poll.match.awayTeam.name]} className="h-2" />
                     </div>
                   </div>
                 </div>
@@ -267,7 +271,7 @@ export default function PollPage({ params }: { params: { id: string } }) {
                   </div>
                 </div>
 
-                <div className="text-sm text-muted-foreground text-center">Total votes: {poll.totalVotes}</div>
+                <div className="text-sm text-muted-foreground text-center">Total votes: {poll._count.votes}</div>
               </TabsContent>
               <TabsContent value="your-vote" className="space-y-4 pt-4">
                 <div className="space-y-2">
@@ -293,7 +297,7 @@ export default function PollPage({ params }: { params: { id: string } }) {
                 <h3 className="font-medium">Predict the Match Winner</h3>
                 <RadioGroup value={selectedTeam || ""} onValueChange={setSelectedTeam}>
                   <div className="flex flex-col gap-3">
-                    {poll.data.options.map((option) => (
+                    {poll.options.map((option) => (
                       <div key={option.id} className="flex items-center space-x-2">
                         <RadioGroupItem value={option.id} id={`team-${option.id}`} />
                         <Label htmlFor={`team-${option.id}`}>{option.text}</Label>
