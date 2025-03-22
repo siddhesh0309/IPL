@@ -11,7 +11,7 @@ export interface AuthContextType {
   isLoading: boolean
   error: string | null
   login: (email: string, password: string) => Promise<void>
-  register: (name: string, email: string, password: string) => Promise<void>
+  register: (name: string, email: string, password: string, username: string) => Promise<void>
   logout: () => Promise<void>
   clearError: () => void
   updateUser: (user: User) => void
@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const register = async (name: string, email: string, password: string) => {
+  const register = async (name: string, email: string, password: string, username: string) => {
     setIsLoading(true)
     setError(null)
 
@@ -84,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, username }),
       })
 
       const data = await response.json()

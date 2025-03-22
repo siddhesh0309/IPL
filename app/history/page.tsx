@@ -48,6 +48,7 @@ export default function HistoryPage() {
         }
 
         const data = await response.json()
+        console.log("Predictions:", data.predictions)
         setPredictions(data.predictions)
       } catch (err) {
         console.error("Error fetching predictions:", err)
@@ -263,9 +264,9 @@ export default function HistoryPage() {
                     </div>
                   ))}
                 </div>
-              ) : getFilteredByType("Man of the Match").length > 0 ? (
+              ) : getFilteredByType("MOTM").length > 0 ? (
                 <div className="space-y-4">
-                  {getFilteredByType("Man of the Match").map((prediction) => (
+                  {getFilteredByType("MOTM").map((prediction) => (
                     <PredictionItem
                       key={prediction.id}
                       teams={prediction.teams}

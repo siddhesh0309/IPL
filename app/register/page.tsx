@@ -16,6 +16,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function RegisterPage() {
   const [name, setName] = useState("")
+  const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -26,7 +27,7 @@ export default function RegisterPage() {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      if (user.role === "admin") {
+      if (user.role === "ADMIN") {
         router.push("/admin/dashboard")
       } else {
         router.push("/dashboard")
@@ -46,7 +47,7 @@ export default function RegisterPage() {
       return
     }
 
-    await register(name, email, password)
+    await register(name, email, password, username)
   }
 
   return (
@@ -71,6 +72,10 @@ export default function RegisterPage() {
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
               <Input id="name" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input id="username" placeholder="johndoe" value={username} onChange={(e) => setUsername(e.target.value)} required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>

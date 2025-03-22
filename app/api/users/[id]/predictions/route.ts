@@ -1,39 +1,48 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getUserPredictions } from "@/lib/db"
 import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { authenticate, authError } from "@/lib/auth"
+import { addISOWeekYears } from "date-fns"
+
 
 export const dynamic = "force-dynamic"
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const session = await getServerSession(authOptions)
+    const { user, error } = await authenticate(request)
 
-    // Check if user is authenticated
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (error || !user) {
+      return authError()
     }
 
-    // Check if user is requesting their own predictions or is an admin
-    if (session.user.id !== params.id && session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-    }
 
     const userId = params.id
+    if (user?.id !== userId) {
+      return NextResponse.json({ success: false, error: "Unauthorized. Cannot view the predictions of other user." }, { status: 403 })
+    }
     const predictions = await getUserPredictions(userId)
+    console.log("predictions", predictions)
+    console.log('option', predictions[0].poll.options)
 
     // Format predictions for the frontend
     const formattedPredictions = predictions.map((prediction) => {
       const match = prediction.poll.match
+      console.log("match", prediction.poll.options.filter((option) => option.isCorrect == true))
       return {
         id: prediction.id,
-        teams: `${match.team1} vs ${match.team2}`,
+        teams: `${match.homeTeam.name} vs ${match.awayTeam.name}`,
         date: match.date,
-        prediction: prediction.option,
-        actual: prediction.poll.correctOption || "Pending",
-        isCorrect: prediction.poll.correctOption === prediction.option,
+        prediction: prediction.poll.options.filter((option) => option.id === prediction.optionId)[0].text,
+        actual: prediction.poll.options.filter((option) => option.isCorrect == true)[0]?.text || "PENDING",
+        isCorrect: prediction.poll.options.filter((option) => option.isCorrect == true)[0]?.id === prediction.optionId,
         type: prediction.poll.type,
-        points: prediction.poll.correctOption === prediction.option ? prediction.poll.points : 0,
+        points: prediction.poll.options.filter((option) => option.isCorrect == true)[0]?.id === prediction.optionId ? (prediction.poll.points ?? 10) : 0,
+        homeTeam: match.homeTeam.name,
+        awayTeam: match.awayTeam.name,
+        homeTeamLogo: match.homeTeam.logo,
+        team2Logo: match.awayTeam.logo,
+        matchId: match.id,
+        pollId: prediction.poll.id,
       }
     })
 

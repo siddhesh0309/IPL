@@ -794,7 +794,13 @@ export async function getUserPredictions(userId: string) {
     include: {
       poll: {
         include: {
-          match: true,
+          options: true,
+          match: {
+            include: {
+              homeTeam: true,
+              awayTeam: true,
+            }
+          },
         },
       },
     },

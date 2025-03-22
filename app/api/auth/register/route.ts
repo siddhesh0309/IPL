@@ -52,10 +52,10 @@ export async function POST(request: Request) {
         username,
         password: hashedPassword,
         role: "USER",
-        status: "active",
-        predictions: 0,
+        // status: "ACTIVE",
+        // predictions: 0,
         points: 0,
-        avatar: "",
+        image: "",
       },
       select: {
         id: true,
@@ -63,37 +63,37 @@ export async function POST(request: Request) {
         email: true,
         username: true,
         role: true,
-        status: true,
+        // status: true,
         createdAt: true,
       },
     })
 
     // Create default settings for the user
-    await db.userSettings.create({
-      data: {
-        userId: user.id,
-        notifications: {
-          emailNotifications: true,
-          pollReminders: true,
-          resultNotifications: true,
-          leaderboardUpdates: true,
-          newPollNotifications: true,
-          predictionResults: true,
-          systemAnnouncements: true,
-        },
-        privacy: {
-          showProfilePublicly: true,
-          showPredictionsPublicly: true,
-          showPointsPublicly: true,
-          allowTagging: true,
-        },
-        theme: {
-          darkMode: false,
-          highContrast: false,
-          reducedMotion: false,
-        },
-      },
-    })
+    // await db.userSettings.create({
+    //   data: {
+    //     userId: user.id,
+    //     notifications: {
+    //       emailNotifications: true,
+    //       pollReminders: true,
+    //       resultNotifications: true,
+    //       leaderboardUpdates: true,
+    //       newPollNotifications: true,
+    //       predictionResults: true,
+    //       systemAnnouncements: true,
+    //     },
+    //     privacy: {
+    //       showProfilePublicly: true,
+    //       showPredictionsPublicly: true,
+    //       showPointsPublicly: true,
+    //       allowTagging: true,
+    //     },
+    //     theme: {
+    //       darkMode: false,
+    //       highContrast: false,
+    //       reducedMotion: false,
+    //     },
+    //   },
+    // })
 
     return NextResponse.json({
       message: "Registration successful",
