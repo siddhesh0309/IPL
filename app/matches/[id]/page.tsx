@@ -73,7 +73,6 @@ export default function MatchDetailsPage({ params }) {
         if (!response.ok) throw new Error("Failed to fetch match details")
 
         const matchData = await response.json()
-        console.log(matchData)
         setMatch(matchData)
 
         // Fetch comments if available
@@ -81,7 +80,6 @@ export default function MatchDetailsPage({ params }) {
           const commentsResponse = await fetch(`/api/matches/${matchData.id}/comments`)
           if (commentsResponse.ok) {
             const commentsData = await commentsResponse.json()
-            console.log(commentsData)
             setMatch((prev) => (prev ? { ...prev, comments: commentsData } : null))
           }
         }

@@ -47,6 +47,7 @@ export default function UsersPage() {
         if (!response.ok) throw new Error("Failed to fetch users")
 
         const data = await response.json()
+        console.log(data)
         setUsers(data.data)
       } catch (error) {
         console.error("Error fetching users:", error)
@@ -176,12 +177,12 @@ export default function UsersPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={user.role === "admin" ? "default" : "outline"}>{user.role}</Badge>
+                      <Badge variant={user.role === "ADMIN" ? "default" : "outline"}>{user.role}</Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={user.status === "active" ? "success" : "secondary"}>{user.status}</Badge>
+                      <Badge variant={user.status === "ACTIVE" ? "success" : "secondary"}>{user.status}</Badge>
                     </TableCell>
-                    <TableCell>{user.predictions}</TableCell>
+                    <TableCell>{user.votes.length}</TableCell>
                     <TableCell>{user.points}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
@@ -267,8 +268,8 @@ interface User {
   name: string
   email: string
   username: string
-  role: "admin" | "user"
-  status: "active" | "inactive"
+  role: "ADMIN" | "USER"
+  status: "ACTIVE" | "INACTIVE"
   predictions: number
   points: number
   avatar: string

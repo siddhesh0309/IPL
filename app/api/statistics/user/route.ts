@@ -4,7 +4,6 @@ import { authenticate, authError } from "@/lib/auth"
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('request', request);
     const { user, error } = await authenticate(request)
 
     if (error || !user) {
@@ -13,7 +12,6 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get("userId") || user.id
-    console.log('userId', userId)
 
     // Check if requesting other user's stats
     if (userId !== user.id && user.role !== "ADMIN") {

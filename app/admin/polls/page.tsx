@@ -39,7 +39,8 @@ export default function AdminPollsPage() {
     const loadPolls = async () => {
       try {
         const fetchedPolls = await fetchPolls()
-        setPolls(fetchedPolls)
+        setPolls(fetchedPolls.data)
+        console.log("fetchedPolls", fetchedPolls)
       } catch (error) {
         console.error("Error loading polls:", error)
       }
@@ -58,8 +59,8 @@ export default function AdminPollsPage() {
     // Filter by search term
     if (
       searchTerm &&
-      !poll.team1.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      !poll.team2.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      !poll.match.homeTeam.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      !poll.match.awayTeam.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
       !poll.venue.toLowerCase().includes(searchTerm.toLowerCase())
     ) {
       return false
@@ -68,7 +69,7 @@ export default function AdminPollsPage() {
     // Filter by team
     if (teamFilter !== "all") {
       const teamName = teamFilter.toLowerCase()
-      if (!poll.team1.toLowerCase().includes(teamName) && !poll.team2.toLowerCase().includes(teamName)) {
+      if (!poll.match.homeTeam.name.toLowerCase().includes(teamName) && !poll.match.awayTeam.name.toLowerCase().includes(teamName)) {
         return false
       }
     }
@@ -92,7 +93,7 @@ export default function AdminPollsPage() {
 
       toast({
         title: "Poll deleted",
-        description: `Poll for ${selectedPoll.team1} vs ${selectedPoll.team2} has been deleted.`,
+        description: `Poll for ${selectedPoll.match.homeTeam.name} vs ${selectedPoll.match.awayTeam.name} has been deleted.`,
       })
     } catch (error) {
       toast({
@@ -198,7 +199,7 @@ export default function AdminPollsPage() {
                     >
                       <div className="flex flex-col mb-4 md:mb-0">
                         <div className="font-medium">
-                          {poll.team1} vs {poll.team2}
+                          {poll.match.homeTeam.name} vs {poll.match.awayTeam.name}
                         </div>
                         <div className="text-sm text-muted-foreground flex items-center mt-1">
                           <Calendar className="mr-1 h-4 w-4" />
@@ -293,7 +294,7 @@ export default function AdminPollsPage() {
                     >
                       <div className="flex flex-col mb-4 md:mb-0">
                         <div className="font-medium">
-                          {poll.team1} vs {poll.team2}
+                          {poll.match.homeTeam.name} vs {poll.match.awayTeam.name}
                         </div>
                         <div className="text-sm text-muted-foreground flex items-center mt-1">
                           <Calendar className="mr-1 h-4 w-4" />
@@ -364,7 +365,7 @@ export default function AdminPollsPage() {
                     >
                       <div className="flex flex-col mb-4 md:mb-0">
                         <div className="font-medium">
-                          {poll.team1} vs {poll.team2}
+                          {poll.match.homeTeam.name} vs {poll.match.awayTeam.name}
                         </div>
                         <div className="text-sm text-muted-foreground flex items-center mt-1">
                           <Calendar className="mr-1 h-4 w-4" />
@@ -374,7 +375,7 @@ export default function AdminPollsPage() {
                           <Badge variant="outline">{poll.totalVotes} votes</Badge>
                           <Badge variant="secondary">Completed</Badge>
                         </div>
-                        <div className="text-sm font-medium mt-1">Result: {poll.team1} won</div>
+                        <div className="text-sm font-medium mt-1">Result: {poll.match.homeTeam.name} won</div>
                       </div>
                       <div className="flex gap-2">
                         <Link href={`/admin/polls/${poll.id}/results`}>
@@ -409,7 +410,7 @@ export default function AdminPollsPage() {
           {selectedPoll && (
             <div className="py-2">
               <p className="font-medium">
-                {selectedPoll.team1} vs {selectedPoll.team2}
+                {selectedPoll.match.homeTeam.name} vs {selectedPoll.match.awayTeam.name}
               </p>
               <p className="text-sm text-muted-foreground">
                 {new Date(selectedPoll.date).toLocaleDateString()} • {selectedPoll.venue}

@@ -15,6 +15,7 @@ import { useAuth } from "@/contexts/auth-context"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function LoginPage() {
+  const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const router = useRouter()
@@ -24,7 +25,8 @@ export default function LoginPage() {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      if (user.role === "admin") {
+      if (user.role === "ADMIN") {
+        console.log("admin")
         router.push("/admin/dashboard")
       } else {
         router.push("/dashboard")
@@ -34,7 +36,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await login(email, password)
+    await login(name)
   }
 
   return (
@@ -57,6 +59,17 @@ export default function LoginPage() {
               </Alert>
             )}
             <div className="space-y-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                type="name"
+                placeholder="Siddhesh Parkhe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+            {/* <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -66,8 +79,8 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-            </div>
-            <div className="space-y-2">
+            </div> */}
+            {/* <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
                 <Link href="/forgot-password" className="text-sm text-primary hover:underline">
@@ -81,14 +94,14 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-            </div>
-            <div className="text-sm text-muted-foreground">
+            </div> */}
+            {/* <div className="text-sm text-muted-foreground">
               Demo credentials:
               <ul className="list-disc list-inside mt-1">
                 <li>User: user@example.com / password</li>
                 <li>Admin: admin@example.com / password</li>
               </ul>
-            </div>
+            </div> */}
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full" disabled={isLoading}>

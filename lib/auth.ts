@@ -61,17 +61,13 @@ export async function authenticate(req: NextRequest): Promise<{ user: User | nul
   try {
     // Get token from authorization header
     const authHeader = req.headers.get("cookie")
-    console.log("authHeader", authHeader)
-    console.log('header', req.headers)
     if (!authHeader || !authHeader.startsWith("auth_token=")) {
       return { user: null, error: "Unauthorized cookie" }
     }
 
 
     const token = authHeader.split("=")[1]
-    console.log("token", token)
     const user = await getUserFromToken(token)
-    console.log("user", user)
     if (!user) {
       return { user: null, error: "Unauthorized" }
     }

@@ -1,16 +1,20 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { auth } from "@/lib/auth"
+import { authenticate, authError } from "@/lib/auth"
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const session = await auth()
+    const { user, error } = await authenticate(request)
 
-    if (!session || !session.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+    if (error || !user) {
+      return authError()
     }
 
-    const id = params.id
+    if (user?.role !== "ADMIN") {
+      return NextResponse.json({ success: false, error: "Unauthorized. Admin access required." }, { status: 403 })
+    }
+
+    const { id } = await params
     const { correctOptionId, pointsPerCorrectVote = 10 } = await request.json()
 
     if (!correctOptionId) {

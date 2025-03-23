@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { auth } from "@/lib/auth"
+import { authenticate, authError } from "@/lib/auth"
 
 export async function GET(request: Request) {
   try {
@@ -49,12 +49,12 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
+    const { user, error } = await authenticate(request)
 
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (error || !user) {
+      return authError()
     }
 
     const { matchId, content } = await request.json()
@@ -76,8 +76,8 @@ export async function POST(request: Request) {
     const comment = await db.comment.create({
       data: {
         matchId,
-        userId: session.user.id,
-        content,
+        userId: user.id,
+        text: content,
       },
       include: {
         user: {

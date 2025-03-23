@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
-import { getServerSession } from "@/lib/auth"
+import { authenticate, authError } from "@/lib/auth"
 import { hashPassword } from "@/lib/auth"
 
 // Input validation schema for creating a user
@@ -10,17 +10,20 @@ const createUserSchema = z.object({
   email: z.string().email("Invalid email address"),
   username: z.string().min(3, "Username must be at least 3 characters"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  role: z.enum(["user", "admin"]).default("user"),
+  role: z.enum(["USER", "ADMIN"]).default("USER"),
   status: z.enum(["active", "inactive"]).default("active"),
 })
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    // Get the authenticated user from the session
-    const session = await getServerSession()
+    const { user, error } = await authenticate(request)
 
-    if (!session || !session.user || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (error || !user) {
+      return authError()
+    }
+
+    if (user?.role !== "ADMIN") {
+      return NextResponse.json({ success: false, error: "Unauthorized. Admin access required." }, { status: 403 })
     }
 
     // Get query parameters
@@ -51,7 +54,6 @@ export async function GET(request: Request) {
       ]
     }
 
-    // Get users with pagination
     const users = await db.user.findMany({
       where,
       select: {
@@ -61,15 +63,26 @@ export async function GET(request: Request) {
         username: true,
         role: true,
         status: true,
-        predictions: true,
+        // predictions: true,
         points: true,
-        avatar: true,
+        image: true,
         createdAt: true,
+        votes: {
+          select: {
+            id: true,
+            pollId: true,
+            userId: true,
+            optionId: true,
+            createdAt: true,
+          },
+
+        },
       },
       skip,
       take: limit,
       orderBy: { createdAt: "desc" },
     })
+    /******  a8c99b30-cc8c-4cce-a204-ff38aa1f0abe  *******/
 
     // Get total count
     const total = await db.user.count({ where })
@@ -89,13 +102,16 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    // Get the authenticated user from the session
-    const session = await getServerSession()
+    let { user, error } = await authenticate(request)
 
-    if (!session || !session.user || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (error || !user) {
+      return authError()
+    }
+
+    if (user?.role !== "ADMIN") {
+      return NextResponse.json({ success: false, error: "Unauthorized. Admin access required." }, { status: 403 })
     }
 
     const body = await request.json()
@@ -129,8 +145,10 @@ export async function POST(request: Request) {
     // Hash password
     const hashedPassword = await hashPassword(password)
 
+
+
     // Create user
-    const user = await db.user.create({
+    const user1 = await db.user.create({
       data: {
         name,
         email,
@@ -138,9 +156,9 @@ export async function POST(request: Request) {
         password: hashedPassword,
         role,
         status,
-        predictions: 0,
+        // predictions: 0,
         points: 0,
-        avatar: "",
+        image: "",
       },
       select: {
         id: true,
@@ -154,33 +172,33 @@ export async function POST(request: Request) {
     })
 
     // Create default settings for the user
-    await db.userSettings.create({
-      data: {
-        userId: user.id,
-        notifications: {
-          emailNotifications: true,
-          pollReminders: true,
-          resultNotifications: true,
-          leaderboardUpdates: true,
-          newPollNotifications: true,
-          predictionResults: true,
-          systemAnnouncements: true,
-        },
-        privacy: {
-          showProfilePublicly: true,
-          showPredictionsPublicly: true,
-          showPointsPublicly: true,
-          allowTagging: true,
-        },
-        theme: {
-          darkMode: false,
-          highContrast: false,
-          reducedMotion: false,
-        },
-      },
-    })
+    // await db.userSettings.create({
+    //   data: {
+    //     userId: user.id,
+    //     notifications: {
+    //       emailNotifications: true,
+    //       pollReminders: true,
+    //       resultNotifications: true,
+    //       leaderboardUpdates: true,
+    //       newPollNotifications: true,
+    //       predictionResults: true,
+    //       systemAnnouncements: true,
+    //     },
+    //     privacy: {
+    //       showProfilePublicly: true,
+    //       showPredictionsPublicly: true,
+    //       showPointsPublicly: true,
+    //       allowTagging: true,
+    //     },
+    //     theme: {
+    //       darkMode: false,
+    //       highContrast: false,
+    //       reducedMotion: false,
+    //     },
+    //   },
+    // })
 
-    return NextResponse.json(user)
+    return NextResponse.json(user1)
   } catch (error) {
     console.error("Create user error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

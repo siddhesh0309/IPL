@@ -14,7 +14,7 @@ import { TeamLogo } from "@/components/team-logo"
 import { Badge } from "@/components/ui/badge"
 
 export default function AdminDashboard() {
-  const { fetchPolls, isLoading } = usePolls()
+  const { fetchAdminPolls, isLoading } = usePolls()
   const [activePolls, setActivePolls] = useState<Poll[]>([])
   const [completedPolls, setCompletedPolls] = useState<Poll[]>([])
   const [upcomingPolls, setUpcomingPolls] = useState<Poll[]>([])
@@ -33,18 +33,20 @@ export default function AdminDashboard() {
     if (!pollsLoaded.current) {
       const loadPolls = async () => {
         try {
-          const polls = await fetchPolls()
+          const polls = await fetchAdminPolls()
+          console.log("Polls:", polls)
+
 
           // Filter polls by status
-          setActivePolls(polls.filter((poll) => poll.status === "ACTIVE"))
-          setCompletedPolls(polls.filter((poll) => poll.status === "COMPLETED"))
-          setUpcomingPolls(polls.filter((poll) => poll.status === "UPCOMING"))
+          setActivePolls(polls.data.filter((poll) => poll.status === "ACTIVE"))
+          setCompletedPolls(polls.data.filter((poll) => poll.status === "COMPLETED"))
+          setUpcomingPolls(polls.data.filter((poll) => poll.status === "UPCOMING"))
 
           // Update stats
           setStats((prev) => ({
             ...prev,
-            activePolls: polls.filter((poll) => poll.status === "ACTIVE").length,
-            completedPolls: polls.filter((poll) => poll.status === "COMPLETED").length,
+            activePolls: polls.data.filter((poll) => poll.status === "ACTIVE").length,
+            completedPolls: polls.data.filter((poll) => poll.status === "COMPLETED").length,
           }))
 
           // Mark polls as loaded
@@ -56,7 +58,7 @@ export default function AdminDashboard() {
 
       loadPolls()
     }
-  }, [fetchPolls])
+  }, [fetchAdminPolls])
 
   return (
     <div className="container mx-auto py-6 space-y-8 animate-fade-in">
@@ -136,8 +138,8 @@ export default function AdminDashboard() {
                 <AdminPollCard
                   key={poll.id}
                   id={poll.id}
-                  team1={poll.team1}
-                  team2={poll.team2}
+                  team1={poll.match.homeTeam.name}
+                  team2={poll.match.awayTeam.name}
                   date={new Date(poll.date).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
@@ -174,8 +176,8 @@ export default function AdminDashboard() {
                 <AdminPollCard
                   key={poll.id}
                   id={poll.id}
-                  team1={poll.team1}
-                  team2={poll.team2}
+                  team1={poll.match.homeTeam.name}
+                  team2={poll.match.awayTeam.name}
                   date={new Date(poll.date).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
@@ -211,8 +213,8 @@ export default function AdminDashboard() {
                 <AdminPollCard
                   key={poll.id}
                   id={poll.id}
-                  team1={poll.team1}
-                  team2={poll.team2}
+                  team1={poll.match.homeTeam.name}
+                  team2={poll.match.awayTeam.name}
                   date={new Date(poll.date).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",

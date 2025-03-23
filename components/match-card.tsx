@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { TeamLogo } from "@/components/team-logo"
 import { Calendar, Clock } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/contexts/auth-context"
 
 interface MatchCardProps {
   id: string
@@ -39,6 +40,9 @@ export function MatchCard({
     if (status === "completed") return "secondary"
     return "outline"
   }
+
+  const { user } = useAuth()
+
 
   return (
     <Card className={cn("match-card overflow-hidden", className)}>
@@ -101,7 +105,7 @@ export function MatchCard({
             </Link>
           )}
 
-          {pollStatus === "not-created" && status === "upcoming" && (
+          {user?.role === "ADMIN" && pollStatus === "not-created" && status === "upcoming" && (
             <Link href={`/admin/polls/create?match=${id}`} className="w-full">
               <Button variant="outline" size="sm" className="w-full">
                 Create Poll

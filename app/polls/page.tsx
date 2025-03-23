@@ -29,8 +29,6 @@ export default function PollsPage() {
         const response = await fetch("/api/polls")
         if (!response.ok) throw new Error("Failed to fetch polls")
         const data = await response.json()
-        console.log(data)
-        console.log(data.data.map((poll: any) => poll.status))
         const polls = data.data
 
         // Filter polls by status

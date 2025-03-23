@@ -37,12 +37,12 @@ export default function CreatePollPage() {
   // Parse match parameter if available
   const initialTeams = matchParam
     ? matchParam.split("-vs-").map((team) =>
-        team
-          .split("-")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" "),
-      )
-    : ["", ""]
+      team
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" "),
+    )
+    : ["Mumbai Indians", "Chennai Super Kings"]
 
   const [team1, setTeam1] = useState(initialTeams[0])
   const [team2, setTeam2] = useState(initialTeams[1])

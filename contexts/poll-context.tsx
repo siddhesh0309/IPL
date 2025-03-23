@@ -9,6 +9,7 @@ interface PollContextType {
   isLoading: boolean
   error: string | null
   fetchPolls: (status?: string) => Promise<Poll[]>
+  fetchAdminPolls: (status?: string) => Promise<Poll[]>
   fetchPoll: (id: string) => Promise<Poll>
   createPoll: (pollData: Partial<Poll>) => Promise<Poll>
   updatePoll: (id: string, pollData: Partial<Poll>) => Promise<Poll>
@@ -31,6 +32,30 @@ export function PollProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const url = status ? `/api/polls?status=${status}` : "/api/polls"
+      const response = await fetch(url)
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || "Failed to fetch polls")
+      }
+
+      const data = await response.json()
+      setPolls(data)
+      return data
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An unknown error occurred")
+      return []
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  const fetchAdminPolls = useCallback(async (status?: string) => {
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const url = status ? `/api/admin/polls?status=${status}` : "/api/admin/polls"
       const response = await fetch(url)
 
       if (!response.ok) {
@@ -189,6 +214,7 @@ export function PollProvider({ children }: { children: React.ReactNode }) {
     isLoading,
     error,
     fetchPolls,
+    fetchAdminPolls,
     fetchPoll,
     createPoll,
     updatePoll,

@@ -188,8 +188,6 @@ export default function PollPage({ params }) {
 
   const isPollEnded = new Date(poll.pollEndTime) < new Date()
 
-  console.log(isPollEnded)
-  console.log(poll)
 
   return (
     <div className="container mx-auto py-6 space-y-6">

@@ -6,9 +6,9 @@ import { hashPassword } from "@/lib/auth"
 // Input validation schema
 const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  username: z.string().min(3, "Username must be at least 3 characters"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  // email: z.string().email("Invalid email address"),
+  // username: z.string().min(3, "Username must be at least 3 characters"),
+  // password: z.string().min(6, "Password must be at least 6 characters"),
 })
 
 export async function POST(request: Request) {
@@ -21,49 +21,37 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Validation failed", details: result.error.format() }, { status: 400 })
     }
 
-    const { name, email, username, password } = result.data
+    const { name } = result.data
 
     // Check if email already exists
-    const existingEmail = await db.user.findUnique({
-      where: { email },
+    const existingName = await db.user.findUnique({
+      where: { name },
     })
 
-    if (existingEmail) {
-      return NextResponse.json({ error: "Email already in use" }, { status: 400 })
+    if (existingName) {
+      return NextResponse.json({ error: "Name already in use" }, { status: 400 })
     }
-
-    // Check if username already exists
-    const existingUsername = await db.user.findUnique({
-      where: { username },
-    })
-
-    if (existingUsername) {
-      return NextResponse.json({ error: "Username already taken" }, { status: 400 })
-    }
-
-    // Hash password
-    const hashedPassword = await hashPassword(password)
 
     // Create user
     const user = await db.user.create({
       data: {
         name,
-        email,
-        username,
-        password: hashedPassword,
+        // email,
+        // username,
+        // password: hashedPassword,
         role: "USER",
-        // status: "ACTIVE",
-        // predictions: 0,
+        status: "ACTIVE",
+        // predictions  : 0,
         points: 0,
         image: "",
       },
       select: {
         id: true,
         name: true,
-        email: true,
-        username: true,
+        // email: true,
+        // username: true,
         role: true,
-        // status: true,
+        status: true,
         createdAt: true,
       },
     })

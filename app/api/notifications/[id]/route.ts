@@ -1,17 +1,15 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { authenticate, authError, authOptions } from "@/lib/auth"
 import { markNotificationAsRead, getNotificationById } from "@/lib/db"
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const session = await getServerSession(authOptions)
+    const { user, error } = await authenticate(request)
 
-    // Check if user is authenticated
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (error || !user) {
+      return authError()
     }
-    const userId = session.user.id
+    const userId = user.id
     const notificationId = params.id
 
     // Verify the notification belongs to the user

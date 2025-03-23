@@ -1,18 +1,18 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { authenticate, authError } from "@/lib/auth"
 import { getUserNotifications, markAllNotificationsAsRead } from "@/lib/db"
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
 
-    // Check if user is authenticated
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+    const { user, error } = await authenticate(request)
+
+    if (error || !user) {
+      return authError()
     }
 
-    const userId = session.user.id
+    const userId = user.id
     const notifications = await getUserNotifications(userId)
 
     return NextResponse.json({ notifications })
@@ -24,14 +24,13 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const { user, error } = await authenticate(request)
 
-    // Check if user is authenticated
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (error || !user) {
+      return authError()
     }
 
-    const userId = session.user.id
+    const userId = user.id
     const { markAllAsRead } = await request.json()
 
     if (markAllAsRead) {

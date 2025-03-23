@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { auth } from "@/lib/auth"
+import { authenticate, authError } from "@/lib/auth"
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const session = await auth()
+    const { user, error } = await authenticate(request)
 
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (error || !user) {
+      return authError()
     }
 
     const id = params.id
@@ -27,14 +27,14 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     // Check if user is the author
-    if (comment.userId !== session.user.id && session.user.role !== "ADMIN") {
+    if (comment.userId !== user.id && user.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
     }
 
     // Update comment
     const updatedComment = await db.comment.update({
       where: { id },
-      data: { content },
+      data: { text: content },
       include: {
         user: {
           select: {
@@ -53,12 +53,12 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const session = await auth()
+    const { user, error } = await authenticate(request)
 
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (error || !user) {
+      return authError()
     }
 
     const id = params.id
@@ -73,7 +73,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     }
 
     // Check if user is the author or admin
-    if (comment.userId !== session.user.id && session.user.role !== "ADMIN") {
+    if (comment.userId !== user.id && user.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
     }
 

@@ -16,10 +16,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function RegisterPage() {
   const [name, setName] = useState("")
-  const [username, setUsername] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
   const router = useRouter()
   const { toast } = useToast()
   const { user, isLoading, error, register, clearError } = useAuth()
@@ -38,16 +34,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (password !== confirmPassword) {
-      toast({
-        title: "Passwords don't match",
-        description: "Please make sure your passwords match.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    await register(name, email, password, username)
+    await register(name)
   }
 
   return (
@@ -72,41 +59,6 @@ export default function RegisterPage() {
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
               <Input id="name" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input id="username" placeholder="johndoe" value={username} onChange={(e) => setUsername(e.target.value)} required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">

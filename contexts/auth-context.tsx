@@ -10,7 +10,7 @@ export interface AuthContextType {
   user: User | null
   isLoading: boolean
   error: string | null
-  login: (email: string, password: string) => Promise<void>
+  login: (name: string) => Promise<void>
   register: (name: string, email: string, password: string, username: string) => Promise<void>
   logout: () => Promise<void>
   clearError: () => void
@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(false)
   }, [])
 
-  const login = async (email: string, password: string) => {
+  const login = async (name: string) => {
     setIsLoading(true)
     setError(null)
 
@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name }),
       })
 
       const data = await response.json()
@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const register = async (name: string, email: string, password: string, username: string) => {
+  const register = async (name: string) => {
     setIsLoading(true)
     setError(null)
 
@@ -84,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email, password, username }),
+        body: JSON.stringify({ name }),
       })
 
       const data = await response.json()

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
-import { getServerSession, hashPassword } from "@/lib/auth"
+import { authenticate, authError, hashPassword } from "@/lib/auth"
 
 // Input validation schema for updating a user
 const updateUserSchema = z.object({
@@ -14,24 +14,22 @@ const updateUserSchema = z.object({
   avatar: z.string().optional(),
 })
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const id = params.id
 
-    // Get the authenticated user from the session
-    const session = await getServerSession()
+    let { user, error } = await authenticate(request)
 
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (error || !user) {
+      return authError()
     }
 
-    // Check if the user is requesting their own profile or is an admin
-    if (session.user.id !== id && session.user.role !== "admin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    if (user?.role !== "ADMIN") {
+      return NextResponse.json({ success: false, error: "Unauthorized. Admin access required." }, { status: 403 })
     }
 
     // Get user by ID
-    const user = await db.user.findUnique({
+    const user1 = await db.user.findUnique({
       where: { id },
       select: {
         id: true,
@@ -40,39 +38,38 @@ export async function GET(request: Request, { params }: { params: { id: string }
         username: true,
         role: true,
         status: true,
-        predictions: true,
+        // predictions: true,
         points: true,
-        avatar: true,
+        image: true,
         createdAt: true,
+        updatedAt: true,
       },
     })
 
-    if (!user) {
+    if (!user1) {
       return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
 
-    return NextResponse.json(user)
+    return NextResponse.json(user1)
   } catch (error) {
     console.error("Get user error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const id = params.id
 
-    // Get the authenticated user from the session
-    const session = await getServerSession()
+    const { user, error } = await authenticate(request)
 
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (error || !user) {
+      return authError()
     }
 
-    // Check if the user is updating their own profile or is an admin
-    const isAdmin = session.user.role === "admin"
-    if (session.user.id !== id && !isAdmin) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    const isAdmin = user.role === "ADMIN"
+    if (user?.role !== "ADMIN") {
+      return NextResponse.json({ success: false, error: "Unauthorized. Admin access required." }, { status: 403 })
     }
 
     const body = await request.json()
@@ -143,9 +140,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         username: true,
         role: true,
         status: true,
-        predictions: true,
+        // predictions: true,
         points: true,
-        avatar: true,
+        image: true,
         createdAt: true,
       },
     })
@@ -157,30 +154,33 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const id = params.id
 
-    // Get the authenticated user from the session
-    const session = await getServerSession()
+    let { user, error } = await authenticate(request)
 
-    if (!session || !session.user || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (error || !user) {
+      return authError()
+    }
+
+    if (user?.role !== "ADMIN") {
+      return NextResponse.json({ success: false, error: "Unauthorized. Admin access required." }, { status: 403 })
     }
 
     // Check if the user exists
-    const user = await db.user.findUnique({
+    const user1 = await db.user.findUnique({
       where: { id },
     })
 
-    if (!user) {
+    if (!user1) {
       return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
 
     // Delete user settings
-    await db.userSettings.delete({
-      where: { userId: id },
-    })
+    // await db.userSettings.delete({
+    //   where: { userId: id },
+    // })
 
     // Delete user votes
     await db.vote.deleteMany({

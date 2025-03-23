@@ -20,7 +20,7 @@ export default function ProtectedRoute({ children, adminOnly = false }: Protecte
     if (!isLoading) {
       if (!user) {
         router.push("/login")
-      } else if (adminOnly && user.role !== "admin") {
+      } else if (adminOnly && user.role !== "ADMIN") {
         router.push("/dashboard")
       }
     }
@@ -41,7 +41,7 @@ export default function ProtectedRoute({ children, adminOnly = false }: Protecte
     )
   }
 
-  if (!user || (adminOnly && user.role !== "admin")) {
+  if (!user || (adminOnly && user.role !== "ADMIN")) {
     return null
   }
 

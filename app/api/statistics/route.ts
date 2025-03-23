@@ -7,7 +7,6 @@ export async function GET(request: NextRequest) {
 
   try {
 
-    console.log('request', request)
     const { user, error } = await authenticate(request)
 
     if (error || !user) {

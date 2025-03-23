@@ -33,14 +33,12 @@ export default function Dashboard() {
         const pollsResponse = await fetch("/api/polls?status=ACTIVE")
         if (!pollsResponse.ok) throw new Error("Failed to fetch polls")
         const pollsData = await pollsResponse.json()
-        console.log(pollsData);
         setActivePolls(pollsData.data.slice(0, 3))
 
         // Fetch upcoming matches
         const matchesResponse = await fetch("/api/matches?status=UPCOMING")
         if (!matchesResponse.ok) throw new Error("Failed to fetch matches")
         const matchesData = await matchesResponse.json()
-        console.log(matchesData);
         setUpcomingMatches(matchesData.matches.slice(0, 3))
 
         // Fetch user's prediction history if logged in

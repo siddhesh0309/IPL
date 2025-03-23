@@ -1,38 +1,48 @@
-import { NextResponse } from "next/server"
-import { db } from "@/lib/db"
-import { auth } from "@/lib/auth"
+import { NextRequest, NextResponse } from "next/server"
+import { db, getPollsByStatus } from "@/lib/db"
+import { authenticate, authError } from "@/lib/auth"
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const session = await auth()
+    const { user, error } = await authenticate(request)
 
-    if (!session || !session.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+    if (error || !user) {
+      return authError()
+    }
+
+    if (user?.role !== "ADMIN") {
+      return NextResponse.json({ success: false, error: "Unauthorized. Admin access required." }, { status: 403 })
     }
 
     const { searchParams } = new URL(request.url)
-    const status = searchParams.get("status")
-    const matchId = searchParams.get("matchId")
-    const search = searchParams.get("search") || ""
-    const page = Number.parseInt(searchParams.get("page") || "1")
-    const limit = Number.parseInt(searchParams.get("limit") || "10")
+    const status = searchParams.get("status") || "all"
+    const teamId = searchParams.get("teamId")
+    const limit = Number.parseInt(searchParams.get("limit") || "100")
+    const offset = Number.parseInt(searchParams.get("offset") || "0")
 
-    // Use the getAllPolls helper function
-    const result = await db.getAllPolls(page, limit, search, status || "", matchId || "")
+    const polls = await getPollsByStatus(status, teamId, limit, offset)
 
-    return NextResponse.json(result)
+
+    return NextResponse.json({
+      success: true,
+      data: polls,
+    })
   } catch (error) {
-    console.error("Admin get polls error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    console.error("Error fetching polls:", error)
+    return NextResponse.json({ success: false, error: "Failed to fetch polls" }, { status: 500 })
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
+    const { user, error } = await authenticate(request)
 
-    if (!session || !session.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+    if (error || !user) {
+      return authError()
+    }
+
+    if (user?.role !== "ADMIN") {
+      return NextResponse.json({ success: false, error: "Unauthorized. Admin access required." }, { status: 403 })
     }
 
     const data = await request.json()
@@ -61,8 +71,8 @@ export async function POST(request: Request) {
         matchId,
         question,
         pollType,
-        team1: match.homeTeam.name,
-        team2: match.awayTeam.name,
+        homeTeamId: match.homeTeam.id,
+        awayTeamId: match.awayTeam.id,
         date: match.date,
         venue: match.venue,
         pollEndTime: new Date(pollEndTime),

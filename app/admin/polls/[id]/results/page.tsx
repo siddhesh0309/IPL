@@ -39,7 +39,7 @@ export default function PollResultsPage({ params }) {
     const loadPoll = async () => {
       try {
         const pollData = await fetchPoll(params.id)
-        setPoll(pollData)
+        setPoll(pollData.data)
       } catch (error) {
         console.error("Error loading poll:", error)
         setLoadingError("Failed to load poll results. Please try again.")
@@ -113,7 +113,7 @@ export default function PollResultsPage({ params }) {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-xl font-semibold">
-            {poll.team1} vs {poll.team2}
+            {poll.match.homeTeam.name} vs {poll.match.awayTeam.name}
           </h2>
           <p className="text-muted-foreground">
             {new Date(poll.date).toLocaleDateString("en-US", {
@@ -168,7 +168,7 @@ export default function PollResultsPage({ params }) {
             <CardFooter>
               <p className="text-sm text-muted-foreground">
                 {poll.status === "completed"
-                  ? `Final result: ${poll.team1} won the match`
+                  ? `Final result: ${poll.match.homeTeam.name} won the match`
                   : "Match result will be updated after the game is completed"}
               </p>
             </CardFooter>

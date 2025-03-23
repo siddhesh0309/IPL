@@ -48,7 +48,6 @@ export default function HistoryPage() {
         }
 
         const data = await response.json()
-        console.log("Predictions:", data.predictions)
         setPredictions(data.predictions)
       } catch (err) {
         console.error("Error fetching predictions:", err)

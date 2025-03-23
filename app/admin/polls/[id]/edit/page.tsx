@@ -53,18 +53,20 @@ export default function EditPollPage({ params }) {
   useEffect(() => {
     const loadPoll = async () => {
       try {
-        const pollData = await fetchPoll(params.id)
+        const { data: pollData } = await fetchPoll(params.id)
         setPoll(pollData)
+        console.log(pollData)
 
         // Set form values
-        setTeam1(pollData.team1)
-        setTeam2(pollData.team2)
+        setTeam1(pollData.match.homeTeam.name)
+        setTeam2(pollData.match.awayTeam.name)
         setMatchDate(new Date(pollData.date))
         setMatchTime(new Date(pollData.date).toTimeString().slice(0, 5))
         setVenue(pollData.venue)
         setPollEndDate(new Date(pollData.pollEndTime))
         setPollEndTime(new Date(pollData.pollEndTime).toTimeString().slice(0, 5))
-        setOptions(pollData.osptions)
+        setOptions(pollData.options)
+        console.log(pollData.options)
       } catch (error) {
         console.error("Error loading poll:", error)
         setLoadingError("Failed to load poll details. Please try again.")

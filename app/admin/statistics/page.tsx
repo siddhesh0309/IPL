@@ -70,6 +70,7 @@ export default function StatisticsPage() {
         }
 
         const data = await response.json()
+        console.log(data);
         setStatistics(data)
       } catch (err) {
         console.error("Error fetching statistics:", err)
@@ -121,43 +122,43 @@ export default function StatisticsPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {isLoading
           ? Array(4)
-              .fill(0)
-              .map((_, i) => (
-                <Card key={i}>
-                  <CardHeader className="pb-2">
-                    <Skeleton className="h-4 w-24" />
-                  </CardHeader>
-                  <CardContent>
-                    <Skeleton className="h-8 w-16 mb-1" />
-                    <Skeleton className="h-4 w-24" />
-                  </CardContent>
-                </Card>
-              ))
+            .fill(0)
+            .map((_, i) => (
+              <Card key={i}>
+                <CardHeader className="pb-2">
+                  <Skeleton className="h-4 w-24" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-8 w-16 mb-1" />
+                  <Skeleton className="h-4 w-24" />
+                </CardContent>
+              </Card>
+            ))
           : statistics && (
-              <>
-                <StatCard
-                  title="Total Users"
-                  value={statistics.users.total.toString()}
-                  trend={getTrend(statistics.users.growth.weekly)}
-                />
-                <StatCard
-                  title="Active Polls"
-                  value={statistics.polls.active.toString()}
-                  trend={getTrend(statistics.polls.active, false)}
-                  isPositive={false}
-                />
-                <StatCard
-                  title="Total Votes"
-                  value={statistics.polls.totalVotes.toLocaleString()}
-                  trend={getTrend(statistics.polls.totalVotes)}
-                />
-                <StatCard
-                  title="Avg. Accuracy"
-                  value={`${statistics.predictions.accuracy.overall}%`}
-                  trend={getTrend(statistics.predictions.accuracy.overall)}
-                />
-              </>
-            )}
+            <>
+              <StatCard
+                title="Total Users"
+                value={statistics.users.total.toString()}
+                trend={getTrend(statistics.users.growth.weekly)}
+              />
+              <StatCard
+                title="Active Polls"
+                value={statistics.polls.active?.toString()}
+                trend={getTrend(statistics.polls.active, false)}
+                isPositive={false}
+              />
+              <StatCard
+                title="Total Votes"
+                value={statistics.polls.totalVotes?.toLocaleString()}
+                trend={getTrend(statistics.polls.totalVotes)}
+              />
+              <StatCard
+                title="Avg. Accuracy"
+                value={`${statistics.predictions?.accuracy.overall}%`}
+                trend={getTrend(statistics.predictions?.accuracy.overall)}
+              />
+            </>
+          )}
       </div>
 
       <Tabs defaultValue="overview">
@@ -296,7 +297,7 @@ export default function StatisticsPage() {
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>Average Predictions per User</span>
-                      <span>{(statistics.predictions.total / statistics.users.total).toFixed(1)}</span>
+                      <span>{(statistics.predictions?.total / statistics.users.total).toFixed(1)}</span>
                     </div>
                     <Progress value={71} className="h-2" />
                   </div>
@@ -349,67 +350,67 @@ export default function StatisticsPage() {
           <div className="grid gap-4 md:grid-cols-2">
             {isLoading
               ? Array(2)
-                  .fill(0)
-                  .map((_, i) => (
-                    <Card key={i}>
-                      <CardHeader>
-                        <Skeleton className="h-6 w-40 mb-2" />
-                        <Skeleton className="h-4 w-60" />
-                      </CardHeader>
-                      <CardContent>
-                        <Skeleton className="h-64 w-full" />
-                      </CardContent>
-                    </Card>
-                  ))
+                .fill(0)
+                .map((_, i) => (
+                  <Card key={i}>
+                    <CardHeader>
+                      <Skeleton className="h-6 w-40 mb-2" />
+                      <Skeleton className="h-4 w-60" />
+                    </CardHeader>
+                    <CardContent>
+                      <Skeleton className="h-64 w-full" />
+                    </CardContent>
+                  </Card>
+                ))
               : statistics && (
-                  <>
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Most Popular Polls</CardTitle>
-                        <CardDescription>Polls with highest participation</CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span>MI vs CSK (Mar 22)</span>
-                            <span>1,245 votes</span>
-                          </div>
-                          <Progress value={92} className="h-2" />
+                <>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Most Popular Polls</CardTitle>
+                      <CardDescription>Polls with highest participation</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>MI vs CSK (Mar 22)</span>
+                          <span>1,245 votes</span>
                         </div>
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span>RCB vs DC (Mar 24)</span>
-                            <span>1,056 votes</span>
-                          </div>
-                          <Progress value={78} className="h-2" />
+                        <Progress value={92} className="h-2" />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>RCB vs DC (Mar 24)</span>
+                          <span>1,056 votes</span>
                         </div>
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span>KKR vs PBKS (Mar 18)</span>
-                            <span>987 votes</span>
-                          </div>
-                          <Progress value={73} className="h-2" />
+                        <Progress value={78} className="h-2" />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>KKR vs PBKS (Mar 18)</span>
+                          <span>987 votes</span>
                         </div>
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span>GT vs LSG (Mar 19)</span>
-                            <span>876 votes</span>
-                          </div>
-                          <Progress value={65} className="h-2" />
+                        <Progress value={73} className="h-2" />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>GT vs LSG (Mar 19)</span>
+                          <span>876 votes</span>
                         </div>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Poll Participation Rate</CardTitle>
-                        <CardDescription>Percentage of users voting in polls</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <LineChart />
-                      </CardContent>
-                    </Card>
-                  </>
-                )}
+                        <Progress value={65} className="h-2" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Poll Participation Rate</CardTitle>
+                      <CardDescription>Percentage of users voting in polls</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <LineChart />
+                    </CardContent>
+                  </Card>
+                </>
+              )}
           </div>
 
           <Card>
@@ -430,41 +431,41 @@ export default function StatisticsPage() {
             <CardContent className="space-y-6">
               {isLoading
                 ? Array(3)
-                    .fill(0)
-                    .map((_, i) => (
-                      <div key={i} className="space-y-2">
-                        <div className="flex justify-between">
-                          <Skeleton className="h-4 w-40" />
-                          <Skeleton className="h-4 w-16" />
-                        </div>
-                        <Skeleton className="h-2 w-full" />
+                  .fill(0)
+                  .map((_, i) => (
+                    <div key={i} className="space-y-2">
+                      <div className="flex justify-between">
+                        <Skeleton className="h-4 w-40" />
+                        <Skeleton className="h-4 w-16" />
                       </div>
-                    ))
+                      <Skeleton className="h-2 w-full" />
+                    </div>
+                  ))
                 : statistics && (
-                    <>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Match Winner Predictions</span>
-                          <span>{statistics.predictions.accuracy.matchWinner}% accurate</span>
-                        </div>
-                        <Progress value={statistics.predictions.accuracy.matchWinner} className="h-2" />
+                  <>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Match Winner Predictions</span>
+                        <span>{statistics.predictions?.accuracy.matchWinner}% accurate</span>
                       </div>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Man of the Match Predictions</span>
-                          <span>{statistics.predictions.accuracy.manOfTheMatch}% accurate</span>
-                        </div>
-                        <Progress value={statistics.predictions.accuracy.manOfTheMatch} className="h-2" />
+                      <Progress value={statistics.predictions?.accuracy.matchWinner} className="h-2" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Man of the Match Predictions</span>
+                        <span>{statistics.predictions?.accuracy.manOfTheMatch}% accurate</span>
                       </div>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Overall Prediction Accuracy</span>
-                          <span>{statistics.predictions.accuracy.overall}% accurate</span>
-                        </div>
-                        <Progress value={statistics.predictions.accuracy.overall} className="h-2" />
+                      <Progress value={statistics.predictions?.accuracy.manOfTheMatch} className="h-2" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Overall Prediction Accuracy</span>
+                        <span>{statistics.predictions?.accuracy.overall}% accurate</span>
                       </div>
-                    </>
-                  )}
+                      <Progress value={statistics.predictions?.accuracy.overall} className="h-2" />
+                    </div>
+                  </>
+                )}
             </CardContent>
           </Card>
 

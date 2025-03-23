@@ -7,8 +7,9 @@ import { comparePassword } from "@/lib/auth"
 
 // Input validation schema
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  name: z.string(),
+  // email: z.string().email("Invalid email address"),
+  // password: z.string().min(6, "Password must be at least 6 characters"),
   rememberMe: z.boolean().optional(),
 })
 
@@ -22,38 +23,35 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Validation failed", details: result.error.format() }, { status: 400 })
     }
 
-    const { email, password, rememberMe } = result.data
+    const { name, rememberMe } = result.data
 
     // Find user by email
     const user = await db.user.findUnique({
-      where: { email },
+      where: { name },
       select: {
         id: true,
-        email: true,
         name: true,
-        password: true,
         role: true,
-        username: true,
         image: true,
         // avatar: true,
       },
     })
 
     if (!user) {
-      return NextResponse.json({ error: "Invalid email or password" }, { status: 401 })
+      return NextResponse.json({ error: "No user found with the name" }, { status: 401 })
     }
 
     // Verify password
-    const passwordMatch = await comparePassword(password, user.password)
-    if (!passwordMatch) {
-      return NextResponse.json({ error: "Invalid email or password" }, { status: 401 })
-    }
+    // const passwordMatch = await comparePassword(password, user.password)
+    // if (!passwordMatch) {
+    // return NextResponse.json({ error: "Invalid email or password" }, { status: 401 })
+    // }
 
     // Create JWT token
     const token = sign(
       {
         id: user.id,
-        email: user.email,
+        // email: user.email,
         role: user.role,
       },
       process.env.JWT_SECRET || "fallback_secret",
@@ -73,7 +71,7 @@ export async function POST(request: Request) {
     })
 
     // Return user data without password
-    const { password: _, ...userWithoutPassword } = user
+    const { ...userWithoutPassword } = user
 
     return NextResponse.json({
       user: userWithoutPassword,
