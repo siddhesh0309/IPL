@@ -116,11 +116,12 @@ export default function CreatePollPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          team1,
-          team2,
+          homeTeam: team1,
+          awayTeam: team2,
+          date: matchDateTime.toISOString(),
           venue,
           startTime: matchDateTime.toISOString(),
-          status: "upcoming",
+          status: "UPCOMING",
         }),
       })
 
@@ -140,10 +141,10 @@ export default function CreatePollPage() {
         },
         body: JSON.stringify({
           matchId,
-          type: "winner",
+          pollType: "WINNER",
           question: `Who will win the match between ${team1} and ${team2}?`,
           options: [{ text: team1 }, { text: team2 }],
-          expiresAt: pollEndDateTime.toISOString(),
+          pollEndTime: pollEndDateTime.toISOString(),
           pointValue: 30,
         }),
       })
@@ -161,10 +162,10 @@ export default function CreatePollPage() {
         },
         body: JSON.stringify({
           matchId,
-          type: "motm",
+          pollType: "MOTM",
           question: `Who will be the Man of the Match for ${team1} vs ${team2}?`,
           options: validPlayers.map((player) => ({ text: player.name })),
-          expiresAt: pollEndDateTime.toISOString(),
+          pollEndTime: pollEndDateTime.toISOString(),
           pointValue: 50,
         }),
       })

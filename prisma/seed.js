@@ -94,10 +94,10 @@ async function main() {
 
     const user = await prisma.user.create({
       data: {
-        email: email,
+        // email: email,
         name: name,
-        username: username,
-        password: userPassword,
+        // username: username,
+        // password: userPassword,
         role: "USER",
         points: Math.floor(Math.random() * 1000),
         image: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D8ABC&color=fff`,

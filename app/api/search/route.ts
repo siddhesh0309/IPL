@@ -26,7 +26,6 @@ export async function GET(request: Request) {
         select: {
           id: true,
           name: true,
-          username: true,
           image: true,
           points: true,
           rank: true,

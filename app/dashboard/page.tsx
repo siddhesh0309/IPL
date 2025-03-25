@@ -172,7 +172,7 @@ export default function Dashboard() {
                   })}
                   time={new Date(poll.date).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
                   venue={poll.venue}
-                  status="upcoming"
+                  status={poll.status}
                   pollStatus="active"
                   votes={poll.totalVotes}
                 />
@@ -221,7 +221,7 @@ export default function Dashboard() {
                   })}
                   time={new Date(match.date).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
                   venue={match.venue}
-                  status="upcoming"
+                  status={match.status}
                   pollStatus="not-created"
                 />
               ))}

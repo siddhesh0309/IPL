@@ -48,6 +48,8 @@ export async function POST(request: NextRequest) {
     const data = await request.json()
     const { matchId, question, pollType, options, pollEndTime } = data
 
+    console.log("Admin create poll data:", data)
+
     if (!matchId || !question || !pollType || !options || !pollEndTime) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
@@ -70,7 +72,7 @@ export async function POST(request: NextRequest) {
       data: {
         matchId,
         question,
-        pollType,
+        type: pollType,
         homeTeamId: match.homeTeam.id,
         awayTeamId: match.awayTeam.id,
         date: match.date,
@@ -78,10 +80,12 @@ export async function POST(request: NextRequest) {
         pollEndTime: new Date(pollEndTime),
         status: "ACTIVE",
         options: {
-          create: options.map((option: string) => ({
-            text: option,
+          create: options.map((option: { text: string }) => ({
+            text: option.text,
           })),
         },
+        pollType: pollType,
+        endTime: new Date(pollEndTime),
       },
       include: {
         options: true,

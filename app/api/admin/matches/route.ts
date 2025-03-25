@@ -83,30 +83,35 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await request.json()
-    const { homeTeamId, awayTeamId, date, venue } = data
+    const { homeTeam: homeTeamId, awayTeam: awayTeamId, date, venue } = data
+
+    console.log("Admin create match data:", data)
 
     if (!homeTeamId || !awayTeamId || !date || !venue) {
+      console.log("Missing required fields")
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
     // Check if teams exist
     const homeTeam = await db.team.findUnique({
-      where: { id: homeTeamId },
+      where: { name: homeTeamId },
     })
 
     const awayTeam = await db.team.findUnique({
-      where: { id: awayTeamId },
+      where: { name: awayTeamId },
     })
 
     if (!homeTeam || !awayTeam) {
       return NextResponse.json({ error: "Team not found" }, { status: 404 })
     }
 
+    console.log("Admin create match teams:", homeTeam, awayTeam)
+
     // Create match
     const match = await db.match.create({
       data: {
-        homeTeamId,
-        awayTeamId,
+        homeTeamId: homeTeam.id,
+        awayTeamId: awayTeam.id,
         date: new Date(date),
         venue,
         status: "UPCOMING",

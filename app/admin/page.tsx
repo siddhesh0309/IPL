@@ -1,24 +1,11 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import {
-  PlusCircle,
-  Edit,
-  Trash2,
-  Users,
-  BarChart3,
-  Calendar,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { useState } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
+import { PlusCircle, Edit, Trash2, Users, BarChart3, Calendar } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 import {
   Dialog,
   DialogContent,
@@ -26,17 +13,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { AdminPollForm } from "@/components/admin-poll-form";
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { AdminPollForm } from "@/components/admin-poll-form"
 
 // Mock data
 const polls = [
@@ -81,7 +62,7 @@ const polls = [
     status: "closed",
     expiresAt: "2025-04-05T17:30:00",
   },
-];
+]
 
 const matches = [
   {
@@ -117,47 +98,19 @@ const matches = [
     status: "completed",
     result: "Sunrisers Hyderabad won by 7 wickets",
   },
-];
+]
 
 const users = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john@example.com",
-    role: "user",
-    predictions: 24,
-    points: 350,
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    email: "jane@example.com",
-    role: "user",
-    predictions: 32,
-    points: 480,
-  },
-  {
-    id: 3,
-    name: "Admin User",
-    email: "admin@example.com",
-    role: "admin",
-    predictions: 28,
-    points: 420,
-  },
-  {
-    id: 4,
-    name: "Bob Johnson",
-    email: "bob@example.com",
-    role: "user",
-    predictions: 18,
-    points: 270,
-  },
-];
+  { id: 1, name: "John Doe", email: "john@example.com", role: "user", predictions: 24, points: 350 },
+  { id: 2, name: "Jane Smith", email: "jane@example.com", role: "user", predictions: 32, points: 480 },
+  { id: 3, name: "Admin User", email: "admin@example.com", role: "admin", predictions: 28, points: 420 },
+  { id: 4, name: "Bob Johnson", email: "bob@example.com", role: "user", predictions: 18, points: 270 },
+]
 
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState("polls");
-  const [isCreatePollOpen, setIsCreatePollOpen] = useState(false);
-  const [isCreateMatchOpen, setIsCreateMatchOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("polls")
+  const [isCreatePollOpen, setIsCreatePollOpen] = useState(false)
+  const [isCreateMatchOpen, setIsCreateMatchOpen] = useState(false)
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -179,11 +132,7 @@ export default function AdminPage() {
         </div>
       </div>
 
-      <Tabs
-        defaultValue="polls"
-        onValueChange={setActiveTab}
-        className="space-y-6"
-      >
+      <Tabs defaultValue="polls" onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full md:w-auto md:inline-grid grid-cols-3 md:grid-cols-3 h-auto">
           <TabsTrigger value="polls">
             <BarChart3 className="mr-2 h-4 w-4" />
@@ -203,9 +152,7 @@ export default function AdminPage() {
           <Card>
             <CardHeader>
               <CardTitle>Manage Polls</CardTitle>
-              <CardDescription>
-                Create, edit, and manage polls for IPL matches
-              </CardDescription>
+              <CardDescription>Create, edit, and manage polls for IPL matches</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -217,21 +164,14 @@ export default function AdminPage() {
                     <div className="flex flex-col mb-4 md:mb-0">
                       <div className="font-medium">{poll.question}</div>
                       <div className="text-sm text-muted-foreground mt-1">
-                        {poll.totalVotes} votes • Expires:{" "}
-                        {new Date(poll.expiresAt).toLocaleString()}
+                        {poll.totalVotes} votes • Expires: {new Date(poll.expiresAt).toLocaleString()}
                       </div>
                       <div className="flex items-center mt-2">
-                        <Badge
-                          variant={
-                            poll.status === "ACTIVE" ? "default" : "secondary"
-                          }
-                        >
+                        <Badge variant={poll.status === "ACTIVE" ? "default" : "secondary"}>
                           {poll.status === "ACTIVE" ? "Active" : "Closed"}
                         </Badge>
                         <Badge variant="outline" className="ml-2">
-                          {poll.type === "winner"
-                            ? "Match Winner"
-                            : "Man of the Match"}
+                          {poll.type === "winner" ? "Match Winner" : "Man of the Match"}
                         </Badge>
                       </div>
                     </div>
@@ -240,11 +180,7 @@ export default function AdminPage() {
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-red-500 hover:text-red-700"
-                      >
+                      <Button variant="outline" size="sm" className="text-red-500 hover:text-red-700">
                         <Trash2 className="mr-2 h-4 w-4" />
                         Delete
                       </Button>
@@ -277,20 +213,10 @@ export default function AdminPage() {
                         {new Date(match.date).toLocaleString()} • {match.venue}
                       </div>
                       <div className="mt-2">
-                        <Badge
-                          variant={
-                            match.status === "upcoming"
-                              ? "default"
-                              : "secondary"
-                          }
-                        >
-                          {match.status === "upcoming"
-                            ? "Upcoming"
-                            : "Completed"}
+                        <Badge variant={match.status === "upcoming" ? "default" : "secondary"}>
+                          {match.status === "upcoming" ? "Upcoming" : "Completed"}
                         </Badge>
-                        {match.result && (
-                          <div className="text-sm mt-1">{match.result}</div>
-                        )}
+                        {match.result && <div className="text-sm mt-1">{match.result}</div>}
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -298,11 +224,7 @@ export default function AdminPage() {
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-red-500 hover:text-red-700"
-                      >
+                      <Button variant="outline" size="sm" className="text-red-500 hover:text-red-700">
                         <Trash2 className="mr-2 h-4 w-4" />
                         Delete
                       </Button>
@@ -370,36 +292,20 @@ export default function AdminPage() {
                           <div className="font-medium">{user.name}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-500">
-                            {user.email}
-                          </div>
+                          <div className="text-sm text-gray-500">{user.email}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <Badge
-                            variant={
-                              user.role === "admin" ? "default" : "secondary"
-                            }
-                          >
-                            {user.role}
-                          </Badge>
+                          <Badge variant={user.role === "ADMIN" ? "default" : "secondary"}>{user.role}</Badge>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          {user.predictions}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          {user.points}
-                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">{user.predictions}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">{user.points}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           <div className="flex space-x-2">
                             <Button variant="outline" size="sm">
                               <Edit className="h-4 w-4" />
                               <span className="sr-only">Edit</span>
                             </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="text-red-500 hover:text-red-700"
-                            >
+                            <Button variant="outline" size="sm" className="text-red-500 hover:text-red-700">
                               <Trash2 className="h-4 w-4" />
                               <span className="sr-only">Delete</span>
                             </Button>
@@ -420,9 +326,7 @@ export default function AdminPage() {
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>Create New Poll</DialogTitle>
-            <DialogDescription>
-              Create a new poll for an upcoming IPL match
-            </DialogDescription>
+            <DialogDescription>Create a new poll for an upcoming IPL match</DialogDescription>
           </DialogHeader>
           <AdminPollForm
             matches={matches.filter((m) => m.status === "upcoming")}
@@ -436,9 +340,7 @@ export default function AdminPage() {
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>Add New Match</DialogTitle>
-            <DialogDescription>
-              Add details for an upcoming IPL match
-            </DialogDescription>
+            <DialogDescription>Add details for an upcoming IPL match</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4">
@@ -451,9 +353,7 @@ export default function AdminPage() {
                   <SelectContent>
                     <SelectItem value="mi">Mumbai Indians</SelectItem>
                     <SelectItem value="csk">Chennai Super Kings</SelectItem>
-                    <SelectItem value="rcb">
-                      Royal Challengers Bangalore
-                    </SelectItem>
+                    <SelectItem value="rcb">Royal Challengers Bangalore</SelectItem>
                     <SelectItem value="kkr">Kolkata Knight Riders</SelectItem>
                     <SelectItem value="dc">Delhi Capitals</SelectItem>
                     <SelectItem value="rr">Rajasthan Royals</SelectItem>
@@ -471,9 +371,7 @@ export default function AdminPage() {
                   <SelectContent>
                     <SelectItem value="mi">Mumbai Indians</SelectItem>
                     <SelectItem value="csk">Chennai Super Kings</SelectItem>
-                    <SelectItem value="rcb">
-                      Royal Challengers Bangalore
-                    </SelectItem>
+                    <SelectItem value="rcb">Royal Challengers Bangalore</SelectItem>
                     <SelectItem value="kkr">Kolkata Knight Riders</SelectItem>
                     <SelectItem value="dc">Delhi Capitals</SelectItem>
                     <SelectItem value="rr">Rajasthan Royals</SelectItem>
@@ -501,10 +399,7 @@ export default function AdminPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsCreateMatchOpen(false)}
-            >
+            <Button variant="outline" onClick={() => setIsCreateMatchOpen(false)}>
               Cancel
             </Button>
             <Button type="submit" onClick={() => setIsCreateMatchOpen(false)}>
@@ -514,5 +409,6 @@ export default function AdminPage() {
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }
+

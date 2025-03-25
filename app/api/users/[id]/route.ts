@@ -34,8 +34,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       select: {
         id: true,
         name: true,
-        email: true,
-        username: true,
+
         role: true,
         status: true,
         // predictions: true,
@@ -80,33 +79,19 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ error: "Validation failed", details: result.error.format() }, { status: 400 })
     }
 
-    const { name, email, username, password, role, status, avatar } = result.data
+    const { name, role, status, avatar } = result.data
 
     // Check if email is being changed and already exists
-    if (email) {
+    if (name) {
       const existingEmail = await db.user.findFirst({
         where: {
-          email,
+          name,
           id: { not: id },
         },
       })
 
       if (existingEmail) {
-        return NextResponse.json({ error: "Email already in use" }, { status: 400 })
-      }
-    }
-
-    // Check if username is being changed and already exists
-    if (username) {
-      const existingUsername = await db.user.findFirst({
-        where: {
-          username,
-          id: { not: id },
-        },
-      })
-
-      if (existingUsername) {
-        return NextResponse.json({ error: "Username already taken" }, { status: 400 })
+        return NextResponse.json({ error: "Name already in use" }, { status: 400 })
       }
     }
 
@@ -114,19 +99,12 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     const updateData: any = {}
 
     if (name) updateData.name = name
-    if (email) updateData.email = email
-    if (username) updateData.username = username
     if (avatar) updateData.avatar = avatar
 
     // Only allow admins to change role and status
     if (isAdmin) {
       if (role) updateData.role = role
       if (status) updateData.status = status
-    }
-
-    // Hash password if provided
-    if (password) {
-      updateData.password = await hashPassword(password)
     }
 
     // Update user
@@ -136,8 +114,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       select: {
         id: true,
         name: true,
-        email: true,
-        username: true,
+
         role: true,
         status: true,
         // predictions: true,

@@ -25,8 +25,8 @@ export async function getUserById(id: string) {
     select: {
       id: true,
       name: true,
-      email: true,
-      username: true,
+
+      // username: true,
       role: true,
       bio: true,
       image: true,
@@ -77,7 +77,6 @@ export async function updateUser(id: string, data: any) {
     where: { id },
     data: {
       name: data.name,
-      username: data.username,
       bio: data.bio,
       image: data.avatar,
       settings: data.settings
@@ -125,8 +124,6 @@ export async function getUsers(search?: string, role?: string, limit = 50, offse
     select: {
       id: true,
       name: true,
-      email: true,
-      username: true,
       role: true,
       bio: true,
       image: true,
@@ -666,7 +663,6 @@ export async function getMatchComments(matchId: string, limit = 50, offset = 0) 
         select: {
           id: true,
           name: true,
-          username: true,
           image: true,
         },
       },
@@ -689,7 +685,6 @@ export async function createComment(data: any) {
         select: {
           id: true,
           name: true,
-          username: true,
           image: true,
         },
       },
@@ -923,7 +918,6 @@ export async function getLeaderboard(limit = 100, offset = 0) {
     select: {
       id: true,
       name: true,
-      username: true,
       image: true,
       votes: {
         select: {
@@ -1246,8 +1240,7 @@ async function getUserGrowth(period: "day" | "week" | "month") {
 //       select: {
 //         id: true,
 //         name: true,
-//         username: true,
-//         image: true,
+//   //         image: true,
 //         points: true,
 //         rank: true,
 //       },
@@ -1338,7 +1331,6 @@ export async function search(query: string, limit = 20) {
     select: {
       id: true,
       name: true,
-      username: true,
       image: true,
       role: true,
     },

@@ -21,7 +21,6 @@ export default function ProfilePage() {
 
   // Profile form state
   const [name, setName] = useState("")
-  const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
   const [bio, setBio] = useState("")
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false)
@@ -36,7 +35,6 @@ export default function ProfilePage() {
   useEffect(() => {
     if (user) {
       setName(user.name || "")
-      setUsername(user.username || "")
       setEmail(user.email || "")
       setBio(user.bio || "")
     }
@@ -55,7 +53,6 @@ export default function ProfilePage() {
         },
         body: JSON.stringify({
           name,
-          username,
           email,
           bio,
         }),
@@ -171,7 +168,7 @@ export default function ProfilePage() {
               </AvatarFallback>
             </Avatar>
             <h2 className="text-xl font-bold">{user.name}</h2>
-            <p className="text-muted-foreground">@{user.username || user.name.toLowerCase().replace(/\s+/g, "")}</p>
+            <p className="text-muted-foreground">@{user.name.toLowerCase().replace(/\s+/g, "")}</p>
             <div className="mt-4 text-center">
               <p className="font-medium">{user.points || 0} points</p>
               <p className="text-sm text-muted-foreground">Rank #{user.rank || "N/A"}</p>
@@ -201,10 +198,6 @@ export default function ProfilePage() {
                     <div className="space-y-2">
                       <Label htmlFor="name">Name</Label>
                       <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="username">Username</Label>
-                      <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>

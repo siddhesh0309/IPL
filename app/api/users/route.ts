@@ -7,9 +7,6 @@ import { hashPassword } from "@/lib/auth"
 // Input validation schema for creating a user
 const createUserSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  username: z.string().min(3, "Username must be at least 3 characters"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
   role: z.enum(["USER", "ADMIN"]).default("USER"),
   status: z.enum(["active", "inactive"]).default("active"),
 })
@@ -59,8 +56,7 @@ export async function GET(request: NextRequest) {
       select: {
         id: true,
         name: true,
-        email: true,
-        username: true,
+
         role: true,
         status: true,
         // predictions: true,
@@ -122,40 +118,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Validation failed", details: result.error.format() }, { status: 400 })
     }
 
-    const { name, email, username, password, role, status } = result.data
+    const { name, role, status } = result.data
 
     // Check if email already exists
     const existingEmail = await db.user.findUnique({
-      where: { email },
+      where: { name },
     })
 
     if (existingEmail) {
-      return NextResponse.json({ error: "Email already in use" }, { status: 400 })
+      return NextResponse.json({ error: "Name already in use" }, { status: 400 })
     }
-
-    // Check if username already exists
-    const existingUsername = await db.user.findUnique({
-      where: { username },
-    })
-
-    if (existingUsername) {
-      return NextResponse.json({ error: "Username already taken" }, { status: 400 })
-    }
-
-    // Hash password
-    const hashedPassword = await hashPassword(password)
-
-
 
     // Create user
     const user1 = await db.user.create({
       data: {
         name,
-        email,
-        username,
-        password: hashedPassword,
         role,
-        status,
         // predictions: 0,
         points: 0,
         image: "",
@@ -163,8 +141,7 @@ export async function POST(request: NextRequest) {
       select: {
         id: true,
         name: true,
-        email: true,
-        username: true,
+
         role: true,
         status: true,
         createdAt: true,

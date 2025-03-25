@@ -36,7 +36,6 @@ export default function AdminDashboard() {
           const polls = await fetchAdminPolls()
           console.log("Polls:", polls)
 
-
           // Filter polls by status
           setActivePolls(polls.data.filter((poll) => poll.status === "ACTIVE"))
           setCompletedPolls(polls.data.filter((poll) => poll.status === "COMPLETED"))

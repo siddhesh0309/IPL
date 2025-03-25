@@ -36,9 +36,6 @@ export async function POST(request: Request) {
     const user = await db.user.create({
       data: {
         name,
-        // email,
-        // username,
-        // password: hashedPassword,
         role: "USER",
         status: "ACTIVE",
         // predictions  : 0,
@@ -48,7 +45,7 @@ export async function POST(request: Request) {
       select: {
         id: true,
         name: true,
-        // email: true,
+        // 
         // username: true,
         role: true,
         status: true,

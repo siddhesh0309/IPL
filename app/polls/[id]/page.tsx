@@ -37,15 +37,18 @@ export default function PollPage({ params }) {
       try {
         const { data } = await fetchPoll(params.id)
         setPoll(data)
+        console.log(data)
 
         // Check if user has already voted
         if (user) {
           const response = await fetch(`/api/votes?userId=${user.id}&pollId=${params.id}`)
+          console.log(response)
           if (response.ok) {
             const votes = await response.json()
+            console.log(votes)
             if (votes.length > 0) {
+              console.log("my votes", votes)
               setHasVoted(true)
-
               // Find the option text for the user's vote
               const teamOption = data.options.find((opt) => opt.id === votes[0].optionId)
               if (teamOption) {
@@ -102,7 +105,7 @@ export default function PollPage({ params }) {
       await submitVote(user.id, params.id, selectedTeam)
 
       // Submit player vote (in a real app, this would be a separate poll)
-      // await submitVote(user.id, `${params.id}-motm`, selectedPlayer)
+      await submitVote(user.id, `${params.id}-motm`, selectedPlayer)
 
       toast({
         title: "Vote submitted successfully",
@@ -160,34 +163,34 @@ export default function PollPage({ params }) {
     )
   }
 
-  // Mock data for Man of the Match options
-  const players = [
-    { id: "p1", name: "Rohit Sharma", team: poll.match.homeTeam.name },
-    { id: "p2", name: "Jasprit Bumrah", team: poll.match.homeTeam.name },
-    { id: "p3", name: "Hardik Pandya", team: poll.match.homeTeam.name },
-    { id: "p4", name: "MS Dhoni", team: poll.match.awayTeam.name },
-    { id: "p5", name: "Ravindra Jadeja", team: poll.match.awayTeam.name },
-    { id: "p6", name: "Ruturaj Gaikwad", team: poll.match.awayTeam.name },
-  ]
+  // // Mock data for Man of the Match options
+  // const players = [
+  //   { id: "p1", name: "Rohit Sharma", team: poll.match.homeTeam.name },
+  //   { id: "p2", name: "Jasprit Bumrah", team: poll.match.homeTeam.name },
+  //   { id: "p3", name: "Hardik Pandya", team: poll.match.homeTeam.name },
+  //   { id: "p4", name: "MS Dhoni", team: poll.match.awayTeam.name },
+  //   { id: "p5", name: "Ravindra Jadeja", team: poll.match.awayTeam.name },
+  //   { id: "p6", name: "Ruturaj Gaikwad", team: poll.match.awayTeam.name },
+  // ]
 
-  // Mock data for team votes
-  const teamVotes = {
-    [poll.match.homeTeam.name]: 65,
-    [poll.match.awayTeam.name]: 35,
-  }
+  // // Mock data for team votes
+  // const teamVotes = {
+  //   [poll.match.homeTeam.name]: 65,
+  //   [poll.match.awayTeam.name]: 35,
+  // }
 
-  // Mock data for player votes
-  const playerVotes = {
-    "Rohit Sharma": 25,
-    "Jasprit Bumrah": 15,
-    "Hardik Pandya": 10,
-    "MS Dhoni": 30,
-    "Ravindra Jadeja": 10,
-    "Ruturaj Gaikwad": 10,
-  }
+  // // Mock data for player votes
+  // const playerVotes = {
+  //   "Rohit Sharma": 25,
+  //   "Jasprit Bumrah": 15,
+  //   "Hardik Pandya": 10,
+  //   "MS Dhoni": 30,
+  //   "Ravindra Jadeja": 10,
+  //   "Ruturaj Gaikwad": 10,
+  // }
 
   const isPollEnded = new Date(poll.pollEndTime) < new Date()
-
+  console.log(isPollEnded)
 
   return (
     <div className="container mx-auto py-6 space-y-6">

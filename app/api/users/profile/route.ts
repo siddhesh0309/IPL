@@ -28,27 +28,16 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "Validation failed", details: result.error.format() }, { status: 400 })
     }
 
-    const { name, username, email, bio } = result.data
+    const { name, bio } = result.data
 
     // Check if email is already taken by another user
-    if (email !== user.email) {
+    if (name !== user.name) {
       const existingUser = await db.user.findUnique({
-        where: { email },
+        where: { name },
       })
 
       if (existingUser) {
-        return NextResponse.json({ error: "Email is already in use" }, { status: 400 })
-      }
-    }
-
-    // Check if username is already taken by another user
-    if (username !== user.username) {
-      const existingUser = await db.user.findUnique({
-        where: { username },
-      })
-
-      if (existingUser) {
-        return NextResponse.json({ error: "Username is already taken" }, { status: 400 })
+        return NextResponse.json({ error: "Name is already in use" }, { status: 400 })
       }
     }
 
@@ -57,15 +46,11 @@ export async function PUT(request: NextRequest) {
       where: { id: user.id },
       data: {
         name,
-        username,
-        email,
         bio,
       },
       select: {
         id: true,
         name: true,
-        username: true,
-        email: true,
         bio: true,
         role: true,
         points: true,
